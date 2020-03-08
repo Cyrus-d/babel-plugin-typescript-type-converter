@@ -1,0 +1,743 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`prop schema generator should generate prop schema in production 1`] = `
+"import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
+import { generateComponentPropsSchema } from '../../../../../src/generatorFunctions';
+export interface ComponentProps {
+  prop_a: string;
+  prop_b?: boolean;
+}
+
+const FunctionComponent = (props: ComponentProps) => {
+  return null;
+};
+
+FunctionComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    }
+  },
+  'required': ['prop_a'],
+  'additionalProperties': false
+};"
+`;
+
+exports[`prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/component-empty-interface.ts 1`] = `
+"import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
+import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+export interface ComponentProps {}
+
+const FunctionComponent = (props: ComponentProps) => {
+  return null;
+};
+
+const SFCComponent: SFC<ComponentProps> = props => {
+  return null;
+};
+
+class ClassComponent extends Component<ComponentProps> {
+  render() {
+    return null;
+  }
+
+}
+
+const MemoComponent: SFC<ComponentProps> = memo(props => {
+  return null;
+});
+const ForwardRefComponent: SFC<ComponentProps> = forwardRef((props, ref: Ref<HTMLDivElement>) => {
+  return null;
+});
+const MemoForwardRefComponent: SFC<ComponentProps> = memo(forwardRef((props, ref: Ref<HTMLDivElement>) => {
+  return null;
+}));"
+`;
+
+exports[`prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/component-extends-props.ts 1`] = `
+"import React, { Component, SFC, memo, Ref, forwardRef } from 'react';
+import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+import { ExternalProps } from '../typings';
+export interface ComponentProps extends ExternalProps {
+  prop_a: string;
+  prop_b?: boolean;
+}
+
+const FunctionComponent = (props: ComponentProps) => {
+  return null;
+};
+
+FunctionComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'ext_prop_1': {
+      'type': 'string'
+    },
+    'ext_prop_2': {
+      'type': 'string'
+    },
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    }
+  },
+  'required': ['ext_prop_1', 'ext_prop_2', 'prop_a'],
+  'additionalProperties': false
+};
+
+const SFCComponent: SFC<ComponentProps> = props => {
+  return null;
+};
+
+SFCComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'ext_prop_1': {
+      'type': 'string'
+    },
+    'ext_prop_2': {
+      'type': 'string'
+    },
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    }
+  },
+  'required': ['ext_prop_1', 'ext_prop_2', 'prop_a'],
+  'additionalProperties': false
+};
+
+class ClassComponent extends Component<ComponentProps> {
+  render() {
+    return null;
+  }
+
+}
+
+ClassComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'ext_prop_1': {
+      'type': 'string'
+    },
+    'ext_prop_2': {
+      'type': 'string'
+    },
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    }
+  },
+  'required': ['ext_prop_1', 'ext_prop_2', 'prop_a'],
+  'additionalProperties': false
+};
+const MemoComponent: SFC<ComponentProps> = memo(props => {
+  return null;
+});
+MemoComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'ext_prop_1': {
+      'type': 'string'
+    },
+    'ext_prop_2': {
+      'type': 'string'
+    },
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    }
+  },
+  'required': ['ext_prop_1', 'ext_prop_2', 'prop_a'],
+  'additionalProperties': false
+};
+const ForwardRefComponent: SFC<ComponentProps> = forwardRef((props, ref: Ref<HTMLDivElement>) => {
+  return null;
+});
+ForwardRefComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'ext_prop_1': {
+      'type': 'string'
+    },
+    'ext_prop_2': {
+      'type': 'string'
+    },
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    }
+  },
+  'required': ['ext_prop_1', 'ext_prop_2', 'prop_a'],
+  'additionalProperties': false
+};
+const MemoForwardRefComponent: SFC<ComponentProps> = memo(forwardRef((props, ref: Ref<HTMLDivElement>) => {
+  return null;
+}));
+MemoForwardRefComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'ext_prop_1': {
+      'type': 'string'
+    },
+    'ext_prop_2': {
+      'type': 'string'
+    },
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    }
+  },
+  'required': ['ext_prop_1', 'ext_prop_2', 'prop_a'],
+  'additionalProperties': false
+};"
+`;
+
+exports[`prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/component-mix-props.ts 1`] = `
+"import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
+import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+import { ExternalProps } from '../typings';
+export interface ComponentProps {
+  prop_a: string;
+  prop_b?: boolean;
+}
+
+const FunctionComponent = (props: ComponentProps & ExternalProps) => {
+  return null;
+};
+
+FunctionComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    },
+    'ext_prop_1': {
+      'type': 'string'
+    },
+    'ext_prop_2': {
+      'type': 'string'
+    }
+  },
+  'required': ['prop_a', 'ext_prop_1', 'ext_prop_2'],
+  'additionalProperties': false
+};
+
+const SFCComponent: SFC<ComponentProps & ExternalProps> = props => {
+  return null;
+};
+
+SFCComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    },
+    'ext_prop_1': {
+      'type': 'string'
+    },
+    'ext_prop_2': {
+      'type': 'string'
+    }
+  },
+  'required': ['prop_a', 'ext_prop_1', 'ext_prop_2'],
+  'additionalProperties': false
+};
+
+class ClassComponent extends Component<ComponentProps & ExternalProps> {
+  render() {
+    return null;
+  }
+
+}
+
+ClassComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    },
+    'ext_prop_1': {
+      'type': 'string'
+    },
+    'ext_prop_2': {
+      'type': 'string'
+    }
+  },
+  'required': ['prop_a', 'ext_prop_1', 'ext_prop_2'],
+  'additionalProperties': false
+};
+const MemoComponent: SFC<ComponentProps & ExternalProps> = memo(props => {
+  return null;
+});
+MemoComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    },
+    'ext_prop_1': {
+      'type': 'string'
+    },
+    'ext_prop_2': {
+      'type': 'string'
+    }
+  },
+  'required': ['prop_a', 'ext_prop_1', 'ext_prop_2'],
+  'additionalProperties': false
+};
+const ForwardRefComponent: SFC<ComponentProps & ExternalProps> = forwardRef((props, ref: Ref<HTMLDivElement>) => {
+  return null;
+});
+ForwardRefComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    },
+    'ext_prop_1': {
+      'type': 'string'
+    },
+    'ext_prop_2': {
+      'type': 'string'
+    }
+  },
+  'required': ['prop_a', 'ext_prop_1', 'ext_prop_2'],
+  'additionalProperties': false
+};
+const MemoForwardRefComponent: SFC<ComponentProps & ExternalProps> = memo(forwardRef((props, ref: Ref<HTMLDivElement>) => {
+  return null;
+}));
+MemoForwardRefComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    },
+    'ext_prop_1': {
+      'type': 'string'
+    },
+    'ext_prop_2': {
+      'type': 'string'
+    }
+  },
+  'required': ['prop_a', 'ext_prop_1', 'ext_prop_2'],
+  'additionalProperties': false
+};"
+`;
+
+exports[`prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/component-no-props.ts 1`] = `
+"import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
+import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+
+const FunctionComponent = props => {
+  return null;
+};
+
+const SFCComponent = props => {
+  return null;
+};
+
+class ClassComponent extends Component {
+  render() {
+    return null;
+  }
+
+}
+
+const MemoComponent = memo(props => {
+  return null;
+});
+const ForwardRefComponent = forwardRef((props, ref: Ref<HTMLDivElement>) => {
+  return null;
+});
+const MemoForwardRefComponent = memo(forwardRef((props, ref: Ref<HTMLDivElement>) => {
+  return null;
+}));"
+`;
+
+exports[`prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/component-prop-schema.ts 1`] = `
+"import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
+import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+export interface ComponentProps {
+  prop_a: string;
+  prop_b?: boolean;
+}
+
+const FunctionComponent = (props: ComponentProps) => {
+  return null;
+};
+
+FunctionComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    }
+  },
+  'required': ['prop_a'],
+  'additionalProperties': false
+};
+
+const SFCComponent: SFC<ComponentProps> = props => {
+  return null;
+};
+
+SFCComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    }
+  },
+  'required': ['prop_a'],
+  'additionalProperties': false
+};
+
+class ClassComponent extends Component<ComponentProps> {
+  render() {
+    return null;
+  }
+
+}
+
+ClassComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    }
+  },
+  'required': ['prop_a'],
+  'additionalProperties': false
+};
+const MemoComponent: SFC<ComponentProps> = memo(props => {
+  return null;
+});
+MemoComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    }
+  },
+  'required': ['prop_a'],
+  'additionalProperties': false
+};
+const ForwardRefComponent: SFC<ComponentProps> = forwardRef((props, ref: Ref<HTMLDivElement>) => {
+  return null;
+});
+ForwardRefComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    }
+  },
+  'required': ['prop_a'],
+  'additionalProperties': false
+};
+const MemoForwardRefComponent: SFC<ComponentProps> = memo(forwardRef((props, ref: Ref<HTMLDivElement>) => {
+  return null;
+}));
+MemoForwardRefComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    }
+  },
+  'required': ['prop_a'],
+  'additionalProperties': false
+};"
+`;
+
+exports[`prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/component-type-schema.ts 1`] = `
+"import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
+import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+import { ExternalProps } from '../typings';
+export interface ComponentProps {
+  prop_a: string;
+  prop_b?: boolean;
+}
+type OwnProps = ComponentProps & ExternalProps;
+
+const FunctionComponent = (props: OwnProps) => {
+  return null;
+};
+
+FunctionComponent.__propsSchema = {
+  'type': 'object',
+  'additionalProperties': false,
+  'properties': {
+    'ext_prop_1': {
+      'type': 'string'
+    },
+    'ext_prop_2': {
+      'type': 'string'
+    },
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    }
+  },
+  'required': ['ext_prop_1', 'ext_prop_2', 'prop_a']
+};
+
+const SFCComponent: SFC<OwnProps> = props => {
+  return null;
+};
+
+SFCComponent.__propsSchema = {
+  'type': 'object',
+  'additionalProperties': false,
+  'properties': {
+    'ext_prop_1': {
+      'type': 'string'
+    },
+    'ext_prop_2': {
+      'type': 'string'
+    },
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    }
+  },
+  'required': ['ext_prop_1', 'ext_prop_2', 'prop_a']
+};
+
+class ClassComponent extends Component<OwnProps> {
+  render() {
+    return null;
+  }
+
+}
+
+ClassComponent.__propsSchema = {
+  'type': 'object',
+  'additionalProperties': false,
+  'properties': {
+    'ext_prop_1': {
+      'type': 'string'
+    },
+    'ext_prop_2': {
+      'type': 'string'
+    },
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    }
+  },
+  'required': ['ext_prop_1', 'ext_prop_2', 'prop_a']
+};
+const MemoComponent: SFC<OwnProps> = memo(props => {
+  return null;
+});
+MemoComponent.__propsSchema = {
+  'type': 'object',
+  'additionalProperties': false,
+  'properties': {
+    'ext_prop_1': {
+      'type': 'string'
+    },
+    'ext_prop_2': {
+      'type': 'string'
+    },
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    }
+  },
+  'required': ['ext_prop_1', 'ext_prop_2', 'prop_a']
+};
+const ForwardRefComponent: SFC<OwnProps> = forwardRef((props, ref: Ref<HTMLDivElement>) => {
+  return null;
+});
+ForwardRefComponent.__propsSchema = {
+  'type': 'object',
+  'additionalProperties': false,
+  'properties': {
+    'ext_prop_1': {
+      'type': 'string'
+    },
+    'ext_prop_2': {
+      'type': 'string'
+    },
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    }
+  },
+  'required': ['ext_prop_1', 'ext_prop_2', 'prop_a']
+};
+const MemoForwardRefComponent: SFC<OwnProps> = memo(forwardRef((props, ref: Ref<HTMLDivElement>) => {
+  return null;
+}));
+MemoForwardRefComponent.__propsSchema = {
+  'type': 'object',
+  'additionalProperties': false,
+  'properties': {
+    'ext_prop_1': {
+      'type': 'string'
+    },
+    'ext_prop_2': {
+      'type': 'string'
+    },
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'boolean'
+    }
+  },
+  'required': ['ext_prop_1', 'ext_prop_2', 'prop_a']
+};"
+`;
+
+exports[`prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/excludeProps-options.ts 1`] = `
+"import React, { Component, SFC, memo, Ref, forwardRef } from 'react';
+import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+export interface ComponentProps {
+  prop_a: string;
+  prop_b: string;
+}
+
+const FunctionComponent = (props: ComponentProps) => {
+  return null;
+};
+
+FunctionComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'prop_a': {
+      'type': 'string'
+    }
+  },
+  'required': ['prop_a'],
+  'additionalProperties': false
+};"
+`;
+
+exports[`prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/includeProps-options.ts 1`] = `
+"import React, { Component, SFC, memo, Ref, forwardRef } from 'react';
+import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+export interface ComponentProps {
+  prop_a: string;
+  prop_b: string;
+}
+
+const FunctionComponent = (props: ComponentProps) => {
+  return null;
+};
+
+FunctionComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'prop_b': {
+      'type': 'string'
+    }
+  },
+  'required': ['prop_b'],
+  'additionalProperties': false
+};"
+`;
+
+exports[`prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/should-applay-maxDept.ts 1`] = `
+"import React, { Component, SFC, memo, Ref, forwardRef } from 'react';
+import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+interface InnerProps {
+  level_1: {
+    level_2: {
+      level_3: string;
+    };
+  };
+}
+export interface ComponentProps {
+  level_0: InnerProps;
+}
+
+const FunctionComponent = (props: ComponentProps) => {
+  return null;
+};
+
+FunctionComponent.__propsSchema = {
+  'type': 'object',
+  'properties': {
+    'level_0': {
+      'type': 'object',
+      'properties': {
+        'level_1': {
+          'type': 'object',
+          'additionalProperties': false
+        }
+      },
+      'required': ['level_1'],
+      'additionalProperties': false
+    }
+  },
+  'required': ['level_0'],
+  'additionalProperties': false
+};"
+`;

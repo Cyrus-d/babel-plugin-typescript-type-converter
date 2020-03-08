@@ -1,31 +1,13 @@
 import path from 'path';
 import glob from 'fast-glob';
-import { transformFileSync } from '@babel/core';
+import { transform } from './utils';
 import plugin from '../src';
-import { PluginOptions } from '../src/types';
-
-function transform(filePath: string, options: any = {}, pluginOptions: PluginOptions = {}): string {
-  return (
-    transformFileSync(filePath, {
-      babelrc: false,
-      comments: pluginOptions.comments || false,
-      configFile: false,
-      filename: filePath,
-      plugins: [[plugin, pluginOptions]],
-      generatorOpts: {
-        quotes: 'single',
-        jsescOption: { quotes: 'single' },
-      },
-      ...options,
-    }).code || ''
-  );
-}
 
 describe('babel-plugin-typescript-to-proptypes', () => {
   glob.sync('./fixtures/**/*.{ts,tsx}', { cwd: __dirname, dot: false }).forEach(basePath => {
     const filePath = String(basePath);
 
-    if (filePath.includes('/special/')) {
+    if (filePath.includes('/special/') || filePath.includes('/manual-converter/')) {
       return;
     }
 

@@ -4,16 +4,16 @@
  */
 
 /* eslint-disable prefer-destructuring */
-
 import { declare } from '@babel/helper-plugin-utils';
 import { addDefault, addNamed } from '@babel/helper-module-imports';
 import syntaxTypeScript from '@babel/plugin-syntax-typescript';
 import { types as t } from '@babel/core';
 import { TSTypeParameterInstantiation } from '@babel/types';
+import { generateTypeSchema, generateComponentPropSchema, generateTypeKeys } from './getSchema';
 import addToClass from './addToClass';
 import addToFunctionOrVar from './addToFunctionOrVar';
 import extractTypeProperties from './extractTypeProperties';
-// import { loadProgram } from './typeChecker';
+import { TransformerData } from './typings';
 import upsertImport from './upsertImport';
 import { Path, PluginOptions, ConvertState, PropTypeDeclaration } from './types';
 
@@ -45,6 +45,8 @@ function isPropsType(param: t.Node): param is PropTypeDeclaration {
 
 export default declare((api: any, options: PluginOptions, root: string) => {
   api.assertVersion(BABEL_VERSION);
+  if (options.isProduction === undefined)
+    throw new Error('The "isProduction" option must have a value of true or false.');
 
   return {
     inherits: syntaxTypeScript,
@@ -165,11 +167,13 @@ export default declare((api: any, options: PluginOptions, root: string) => {
           }
 
           // Abort early if we're definitely not in a file that needs conversion
-          if (!state.propTypes.defaultImport && !state.reactImportedName) {
-            return;
-          }
+          // if (!state.propTypes.defaultImport && !state.reactImportedName) {
+          //   return;
+          // }
 
-          const transformers: (() => void)[] = [];
+          const componentsToGeneratePropSchema: { name: string; node: t.CallExpression }[] = [];
+          const transformerData: TransformerData[] = [];
+          const componentsToPropTypes: string[] = [];
 
           programPath.traverse({
             // airbnbPropTypes.componentWithName()
@@ -177,12 +181,24 @@ export default declare((api: any, options: PluginOptions, root: string) => {
               const { node } = path;
               const { namedImports } = state.airbnbPropTypes;
 
-              if (
-                options.forbidExtraProps &&
-                t.isIdentifier(node.callee) &&
-                namedImports.includes(node.callee.name)
-              ) {
-                state.airbnbPropTypes.count += 1;
+              if (t.isIdentifier(node.callee)) {
+                if (options.forbidExtraProps && namedImports.includes(node.callee.name)) {
+                  state.airbnbPropTypes.count += 1;
+                }
+
+                if (node.callee.name === 'generateComponentPropsSchema') {
+                  if (node.arguments.length > 0 && t.isIdentifier(node.arguments[0])) {
+                    componentsToGeneratePropSchema.push({ name: node.arguments[0].name, node });
+                    path.remove();
+                  }
+                }
+
+                if (node.callee.name === 'generateComponentPropTypes') {
+                  if (node.arguments.length > 0 && t.isIdentifier(node.arguments[0])) {
+                    componentsToPropTypes.push(node.arguments[0].name);
+                    path.remove();
+                  }
+                }
               }
             },
 
@@ -210,7 +226,14 @@ export default declare((api: any, options: PluginOptions, root: string) => {
               );
 
               if (valid) {
-                transformers.push(() => addToClass(node, state));
+                transformerData.push({
+                  name: node.id.name,
+                  path,
+                  propsType:
+                    node.superTypeParameters?.params &&
+                    ((node.superTypeParameters?.params[0] as unknown) as t.TSIntersectionType),
+                  state,
+                });
               }
             },
 
@@ -225,14 +248,12 @@ export default declare((api: any, options: PluginOptions, root: string) => {
                 t.isTSTypeAnnotation(node.params[0].typeAnnotation) &&
                 isPropsType(node.params[0].typeAnnotation.typeAnnotation)
               ) {
-                transformers.push(() =>
-                  addToFunctionOrVar(
-                    path,
-                    node.id.name,
-                    (node.params[0] as any).typeAnnotation.typeAnnotation,
-                    state,
-                  ),
-                );
+                transformerData.push({
+                  name: node.id.name,
+                  path,
+                  propsType: (node.params[0] as any).typeAnnotation.typeAnnotation,
+                  state,
+                });
               }
             },
 
@@ -328,7 +349,10 @@ export default declare((api: any, options: PluginOptions, root: string) => {
 
                 // const Foo = (props: Props) => {};
                 // const Foo = function(props: Props) {};
-              } else if (t.isArrowFunctionExpression(decl.init) || t.isFunctionExpression(decl.init)) {
+              } else if (
+                t.isArrowFunctionExpression(decl.init) ||
+                t.isFunctionExpression(decl.init)
+              ) {
                 if (
                   !!state.reactImportedName &&
                   isComponentName(id.name) &&
@@ -393,17 +417,50 @@ export default declare((api: any, options: PluginOptions, root: string) => {
                     }
                   }
                 }
+
+                if (t.isIdentifier(init.callee) && init.callee.name === 'getSchemaFormType') {
+                  generateTypeSchema(id, path, init, state, options);
+                }
+                if (t.isIdentifier(init.callee) && init.callee.name === 'getTypeKeys') {
+                  generateTypeKeys(id, path, init, state, options);
+                }
               }
 
               if (props) {
-                transformers.push(() => addToFunctionOrVar(path, id.name, props!, state));
+                transformerData.push({
+                  name: id.name,
+                  path,
+                  propsType: props,
+                  state,
+                });
               }
             },
           });
 
           // After we have extracted all our information, run all transformers
-          transformers.forEach(transformer => {
-            transformer();
+          transformerData.forEach(data => {
+            const { path, name, state, propsType } = data;
+            if (
+              (!options.isProduction || options.generateReactPropTypesInProduction) &&
+              (!options.generateReactPropTypesManually || componentsToPropTypes.includes(name))
+            ) {
+              if (t.isClassDeclaration(path.node) || t.isClassExpression(path.node)) {
+                addToClass(path.node, state);
+              } else if (t.isFunctionDeclaration(path.node) || t.isVariableDeclaration(path.node)) {
+                addToFunctionOrVar(path as Path<t.FunctionDeclaration>, name, propsType!, state);
+              }
+            }
+            const generatorInfo = componentsToGeneratePropSchema.find(x => x.name === name);
+            if (generatorInfo) {
+              generateComponentPropSchema(
+                name,
+                path,
+                state,
+                generatorInfo.node,
+                options,
+                propsType,
+              );
+            }
           });
         },
 

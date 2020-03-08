@@ -1,8 +1,8 @@
 {
-  "name": "babel-plugin-typescript-to-proptypes",
-  "version": "1.3.0",
-  "description": "Generate React PropTypes from TypeScript prop interfaces.",
-  "repository": "https://github.com/milesj/babel-plugin-typescript-to-proptypes",
+  "name": "babel-plugin-typescript-type-converter",
+  "version": "1.4.0",
+  "description": "Generate React PropTypes and schema from types.",
+  "repository": "https://github.com/Cyrus-d/babel-plugin-typescript-type-converter",
   "license": "MIT",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -33,7 +33,12 @@
   "dependencies": {
     "@babel/helper-module-imports": "^7.8.3",
     "@babel/helper-plugin-utils": "^7.8.3",
-    "@babel/plugin-syntax-typescript": "^7.8.3"
+    "@babel/plugin-syntax-typescript": "^7.8.3",
+    "@types/shortid": "^0.0.29",
+    "babel-literal-to-ast": "^2.1.0",
+    "babel-object-to-ast": "^2.1.5",
+    "deepmerge": "^4.2.2",
+    "ts-to-json": "^0.61.2"
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",
@@ -111,8 +116,15 @@
       ]
     },
     "typescript": {
+      "compilerOptions": {
+        "sourceMap": true
+      },
+      "include": [
+        "./debug/**/*"
+      ],
       "exclude": [
-        "./tests/fixtures/**/*"
+        "./tests/fixtures/**/*",
+        "./tests/**/*"
       ]
     }
   }

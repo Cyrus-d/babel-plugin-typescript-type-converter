@@ -1,0 +1,149 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`type-generator should not transforms in production when disabled  1`] = `
+"import { getSchemaFormType } from '../../../../../src/generatorFunctions';
+interface TestProps {
+  prop_a: string;
+  prop_b?: string;
+}
+const shouldBeNullValue = null;
+const shouldHaveSchema = {
+  'type': 'object',
+  'properties': {
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'string'
+    }
+  },
+  'required': ['prop_a'],
+  'additionalProperties': false
+};"
+`;
+
+exports[`type-generator transforms ./fixtures/manual-converter/type-schema/extended-type-schema copy.ts 1`] = `
+"import { ExternalProps } from '../typings';
+import { getSchemaFormType } from '../../../../src/generatorFunctions';
+interface TestProps extends ExternalProps {
+  prop_a: string;
+  prop_b?: string;
+}
+const type = {
+  'type': 'object',
+  'properties': {
+    'ext_prop_1': {
+      'type': 'string'
+    },
+    'ext_prop_2': {
+      'type': 'string'
+    },
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'string'
+    }
+  },
+  'required': ['ext_prop_1', 'ext_prop_2', 'prop_a'],
+  'additionalProperties': false
+};"
+`;
+
+exports[`type-generator transforms ./fixtures/manual-converter/type-schema/interface-schema.ts 1`] = `
+"import { getSchemaFormType } from '../../../../src/generatorFunctions';
+interface TestProps {
+  prop_a: string;
+  prop_b?: string;
+}
+const type = {
+  'type': 'object',
+  'properties': {
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'string'
+    }
+  },
+  'required': ['prop_a'],
+  'additionalProperties': false
+};
+const type2 = {
+  'type': 'object',
+  'properties': {
+    'prop_a': {
+      'type': 'string'
+    }
+  },
+  'required': ['prop_a'],
+  'additionalProperties': false
+};
+const type3 = {
+  'type': 'object',
+  'properties': {
+    'prop_b': {
+      'type': 'string'
+    }
+  },
+  'required': [],
+  'additionalProperties': false
+};"
+`;
+
+exports[`type-generator transforms ./fixtures/manual-converter/type-schema/interface-schema-maxDepth.ts 1`] = `
+"import { getSchemaFormType } from '../../../../src/generatorFunctions';
+interface TestProps {
+  level_1: {
+    level_2: {
+      level_3: string;
+    };
+  };
+}
+const type4 = {
+  'type': 'object',
+  'properties': {
+    'level_1': {
+      'type': 'object',
+      'properties': {
+        'level_2': {
+          'type': 'object',
+          'additionalProperties': false
+        }
+      },
+      'required': ['level_2'],
+      'additionalProperties': false
+    }
+  },
+  'required': ['level_1'],
+  'additionalProperties': false
+};"
+`;
+
+exports[`type-generator transforms ./fixtures/manual-converter/type-schema/mix-type-schema.ts 1`] = `
+"import { ExternalProps } from '../typings';
+import { getSchemaFormType } from '../../../../src/generatorFunctions';
+interface TestProps {
+  prop_a: string;
+  prop_b?: string;
+}
+const type = {
+  'type': 'object',
+  'properties': {
+    'prop_a': {
+      'type': 'string'
+    },
+    'prop_b': {
+      'type': 'string'
+    },
+    'ext_prop_1': {
+      'type': 'string'
+    },
+    'ext_prop_2': {
+      'type': 'string'
+    }
+  },
+  'required': ['prop_a', 'ext_prop_1', 'ext_prop_2'],
+  'additionalProperties': false
+};"
+`;

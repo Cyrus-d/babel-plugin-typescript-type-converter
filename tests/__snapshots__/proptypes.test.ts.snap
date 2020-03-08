@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`prop types should generate prop-types manually 1`] = `
+"import _pt from 'prop-types';
+import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
+import { generateComponentPropTypes } from '../../../../src/generatorFunctions';
+export interface ComponentProps {
+  prop_a: string;
+  prop_b?: boolean;
+}
+
+const FunctionComponent = (props: ComponentProps) => {
+  return null;
+};
+
+FunctionComponent.propTypes = {
+  prop_a: _pt.string.isRequired,
+  prop_b: _pt.bool
+};"
+`;
+
+exports[`prop types should not transforms when generateReactPropTypesManually=true  1`] = `
+"import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
+export interface ComponentProps {
+  prop_a: string;
+  prop_b?: boolean;
+}
+
+const FunctionComponent = (props: ComponentProps) => {
+  return null;
+};"
+`;
+
+exports[`prop types should not transforms when is in Production  1`] = `
+"import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
+export interface ComponentProps {
+  prop_a: string;
+  prop_b?: boolean;
+}
+
+const FunctionComponent = (props: ComponentProps) => {
+  return null;
+};"
+`;
+
+exports[`prop types should transforms when generateReactPropTypesInProduction=true 1`] = `
+"import _pt from 'prop-types';
+import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
+export interface ComponentProps {
+  prop_a: string;
+  prop_b?: boolean;
+}
+
+const FunctionComponent = (props: ComponentProps) => {
+  return null;
+};
+
+FunctionComponent.propTypes = {
+  prop_a: _pt.string.isRequired,
+  prop_b: _pt.bool
+};"
+`;
+
+exports[`prop types should transforms when is not in production 1`] = `
+"import _pt from 'prop-types';
+import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
+export interface ComponentProps {
+  prop_a: string;
+  prop_b?: boolean;
+}
+
+const FunctionComponent = (props: ComponentProps) => {
+  return null;
+};
+
+FunctionComponent.propTypes = {
+  prop_a: _pt.string.isRequired,
+  prop_b: _pt.bool
+};"
+`;
