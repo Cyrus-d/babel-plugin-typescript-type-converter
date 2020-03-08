@@ -34,8 +34,6 @@
     "@babel/helper-module-imports": "^7.8.3",
     "@babel/helper-plugin-utils": "^7.8.3",
     "@babel/plugin-syntax-typescript": "^7.8.3",
-    "@types/shortid": "^0.0.29",
-    "babel-literal-to-ast": "^2.1.0",
     "babel-object-to-ast": "^2.1.5",
     "deepmerge": "^4.2.2",
     "ts-to-json": "^0.61.2"
