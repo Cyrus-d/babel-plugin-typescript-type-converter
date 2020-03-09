@@ -47,7 +47,9 @@ export default declare((api: any, options: PluginOptions, root: string) => {
   api.assertVersion(BABEL_VERSION);
 
   if (options.isProduction === undefined)
-    throw new Error('The "isProduction" option must have a value of true or false.');
+    throw new Error(
+      'The "isProduction" option must have a value of true or false. (babel-plugin-typescript-type-converter)',
+    );
 
   return {
     inherits: syntaxTypeScript,

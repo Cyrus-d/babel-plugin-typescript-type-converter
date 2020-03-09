@@ -133,6 +133,12 @@ required.
 
 ### Options
 
+#### isProduction
+
+This option required to determinate when to generate objects.
+
+> Options required and must have value of true or false
+
 #### `comments` (boolean)
 
 Copy comments from original source file for docgen purposes. Requires the `comments` option to also
