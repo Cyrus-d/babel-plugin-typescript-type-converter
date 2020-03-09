@@ -35,4 +35,20 @@ describe('prop schema generator', () => {
       ),
     ).toMatchSnapshot();
   });
+
+  it('should always generate prop schema in production', () => {
+    expect(
+      transform(
+        path.join(
+          __dirname,
+          './fixtures/manual-converter/component-prop-schema/special/component-prop-schema-production-global.ts',
+        ),
+        {},
+        {
+          isProduction: true,
+          generateReactPropsSchemaInProduction: true,
+        },
+      ),
+    ).toMatchSnapshot();
+  });
 });

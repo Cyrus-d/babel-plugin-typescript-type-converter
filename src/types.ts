@@ -20,12 +20,12 @@ export interface PluginOptions {
   maxSize?: number;
   strict?: boolean;
   typeCheck?: boolean | string;
-  generateReactPropTypesManually?: boolean;
   /*
   must provide this option to determinate what process need to be continue in production environment
   */
   isProduction?: boolean;
   generateReactPropTypesInProduction?: boolean;
+  generateReactPropTypesManually?: boolean;
   generateReactPropsSchemaInProduction?: boolean;
 }
 
