@@ -1,5 +1,5 @@
 /**
- * @copyright   2018-2019, Miles Johnson
+ * @copyright   2018-2019, Miles Johnson, mo doaie
  * @license     https://opensource.org/licenses/MIT
  */
 
@@ -16,6 +16,8 @@ import extractTypeProperties from './extractTypeProperties';
 import { TransformerData } from './typings';
 import upsertImport from './upsertImport';
 import { Path, PluginOptions, ConvertState, PropTypeDeclaration } from './types';
+
+export * from './generatorFunctions';
 
 const BABEL_VERSION = 7;
 const MAX_DEPTH = 3;
@@ -48,7 +50,7 @@ export default declare((api: any, options: PluginOptions, root: string) => {
 
   if (options.isProduction === undefined)
     throw new Error(
-      'The "isProduction" option must have a value of true or false. (babel-plugin-typescript-type-converter)',
+      'The "isProduction" option must have a value of true or false. (babel-plugin-transform-typescript-type)',
     );
 
   return {
