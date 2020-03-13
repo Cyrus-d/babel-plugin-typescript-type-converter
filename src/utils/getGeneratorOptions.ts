@@ -30,8 +30,9 @@ const setOtherOptions = (prop: t.ObjectProperty, opts: Option) => {
   }
 };
 
-export const getGeneratorOptions = <T extends t.CallExpression>(node: T) => {
-  if (!node.arguments) return {};
+export const getGeneratorOptions = <T extends t.CallExpression>(node: T): GeneratorOptions<T> => {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  if (!node.arguments) return {} as GeneratorOptions<T>;
 
   return node.arguments.reduce((opts, arg) => {
     if (t.isObjectExpression(arg)) {

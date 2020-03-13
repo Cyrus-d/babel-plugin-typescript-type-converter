@@ -1,5 +1,6 @@
 import { types as t, traverse } from '@babel/core';
 import ts from 'typescript';
+import { Config } from 'ts-to-json';
 
 export type Path<N> = traverse.NodePath<N>;
 
@@ -11,7 +12,9 @@ export type PropTypeDeclaration = t.TSTypeReference | t.TSIntersectionType | t.T
 
 export type PropType = t.MemberExpression | t.CallExpression | t.Identifier | t.Literal;
 
-export interface PluginOptions {
+export type TsParserConfig = Omit<Config, 'path' | 'type' | 'skipTypeCheck'>;
+
+export interface PluginOptions extends Partial<TsParserConfig> {
   comments?: boolean;
   customPropTypeSuffixes?: string[];
   forbidExtraProps?: boolean;
