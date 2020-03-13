@@ -21,13 +21,14 @@ export const getSchema = (state: ConvertState, propName: string): tsJson.Definit
 
   const config: tsJson.Config = {
     expose: 'none',
+    // handleUnknownTypes: true,
     jsDoc: 'none',
     maxDepth: state.options.maxDepth,
     path: state.filePath,
+    skipFiles: ['lib.dom.d.ts', '@types/react/index.d.ts'],
     skipTypeCheck: true,
     topRef: true,
     type: propName,
-    useTypescriptTypeName: true,
   };
 
   let program: ts.Program | undefined = programCache.get(programCacheKey);

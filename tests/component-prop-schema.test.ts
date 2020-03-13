@@ -1,6 +1,6 @@
-import { transform } from './utils';
 import path from 'path';
 import glob from 'fast-glob';
+import { transform } from './utils';
 
 describe('prop schema generator', () => {
   glob

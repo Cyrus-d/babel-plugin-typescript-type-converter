@@ -19,7 +19,7 @@ FunctionComponent.propTypes = {
 };"
 `;
 
-exports[`prop types should not transforms when generateReactPropTypesManually=true  1`] = `
+exports[`prop types should not transforms when generateReactPropTypesManually=true 1`] = `
 "import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
 export interface ComponentProps {
   prop_a: string;
@@ -31,7 +31,7 @@ const FunctionComponent = (props: ComponentProps) => {
 };"
 `;
 
-exports[`prop types should not transforms when is in Production  1`] = `
+exports[`prop types should not transforms when is in Production 1`] = `
 "import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
 export interface ComponentProps {
   prop_a: string;

@@ -8,23 +8,25 @@ export function transform(
   pluginOptions: PluginOptions = {},
 ): string {
   if (options.plugins) {
-    options.plugins = options.plugins.map(plg => {
+    options.plugins = options.plugins.map((plg: any) => {
       if (typeof plg === 'function') return [plg, { isProduction: false }];
+
       return plg;
     });
   }
   if (pluginOptions.isProduction === undefined) pluginOptions.isProduction = false;
+
   return (
     transformFileSync(filePath, {
       babelrc: false,
       comments: pluginOptions.comments || false,
       configFile: false,
       filename: filePath,
-      plugins: [[plugin, pluginOptions]],
       generatorOpts: {
-        quotes: 'single',
         jsescOption: { quotes: 'single' },
+        quotes: 'single',
       },
+      plugins: [[plugin, pluginOptions]],
       ...options,
     }).code || ''
   );

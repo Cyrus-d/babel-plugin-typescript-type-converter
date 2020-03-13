@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`type-generator should not transforms in production when disabled  1`] = `
+exports[`type-generator should not transforms in production when disabled 1`] = `
 "import { getTypeKeys } from '../../../../../src/generatorFunctions';
 interface TestProps {
   prop_a: string;

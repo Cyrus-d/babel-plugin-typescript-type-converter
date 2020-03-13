@@ -1,6 +1,6 @@
-import { transform } from './utils';
 import path from 'path';
 import glob from 'fast-glob';
+import { transform } from './utils';
 
 describe('type-generator', () => {
   glob
@@ -18,7 +18,7 @@ describe('type-generator', () => {
       });
     });
 
-  it('should not transforms in production when disabled ', () => {
+  it('should not transforms in production when disabled', () => {
     expect(
       transform(
         path.join(__dirname, './fixtures/manual-converter/type-keys/special/production.ts'),

@@ -6038,10 +6038,10 @@ ts-jest@^24.1.0:
     semver "^5.5"
     yargs-parser "10.x"
 
-ts-to-json@^0.61.2:
-  version "0.61.2"
-  resolved "https://registry.yarnpkg.com/ts-to-json/-/ts-to-json-0.61.2.tgz#fdce576910bf0b475566004d06277a1973cd2e55"
-  integrity sha512-EQD5rVyhsjHJ/sqcMDr+bU1yXXi2VuWPsKDhL03pQb3Cv3gAuuAs10phzt5pVTMR+WWrR8pMavMOL+1v8I5Pgg==
+ts-to-json@^0.61.7:
+  version "0.61.7"
+  resolved "https://registry.yarnpkg.com/ts-to-json/-/ts-to-json-0.61.7.tgz#76d36c6a4ec4945c25921b349067a46636575125"
+  integrity sha512-OvbZmUHZy/thU9+8cC9e9Bh8nyS4nxl+ai13n3ydzgSUhOY9+4WktH2sxSaoQtuSsm/9bDKU98yNyyYlqueKqg==
   dependencies:
     "@types/animejs" "^3.1.0"
     "@types/json-schema" "^7.0.4"

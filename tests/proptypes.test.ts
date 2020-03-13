@@ -1,5 +1,5 @@
-import { transform } from './utils';
 import path from 'path';
+import { transform } from './utils';
 
 describe('prop types', () => {
   it('should transforms when is not in production', () => {
@@ -14,7 +14,7 @@ describe('prop types', () => {
     ).toMatchSnapshot();
   });
 
-  it('should not transforms when is in Production ', () => {
+  it('should not transforms when is in Production', () => {
     expect(
       transform(
         path.join(__dirname, './fixtures/manual-converter/prop-types/component-prop-schema.ts'),
@@ -26,7 +26,7 @@ describe('prop types', () => {
     ).toMatchSnapshot();
   });
 
-  it('should not transforms when generateReactPropTypesManually=true ', () => {
+  it('should not transforms when generateReactPropTypesManually=true', () => {
     expect(
       transform(
         path.join(__dirname, './fixtures/manual-converter/prop-types/component-prop-schema.ts'),
