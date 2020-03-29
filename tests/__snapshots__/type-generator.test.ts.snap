@@ -1,5 +1,47 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`type-generator should merge skipParseTypeInFiles items 1`] = `
+"import { getSchemaFormType } from '../../../../../src/generatorFunctions';
+interface TestProps {
+  a: HTMLElement;
+  b?: AudioParam;
+}
+const type = {
+  'type': 'object',
+  'properties': {
+    'a': {
+      'type': 'HTMLElement'
+    },
+    'b': {
+      'type': 'AudioParam'
+    }
+  },
+  'required': ['a'],
+  'additionalProperties': false
+};"
+`;
+
+exports[`type-generator should merge skipParseTypes items 1`] = `
+"import { getSchemaFormType } from '../../../../../src/generatorFunctions';
+interface TestProps {
+  a: HTMLElement;
+  b?: HTMLDivElement;
+}
+const type = {
+  'type': 'object',
+  'properties': {
+    'a': {
+      'type': 'HTMLElement'
+    },
+    'b': {
+      'type': 'HTMLDivElement'
+    }
+  },
+  'required': ['a'],
+  'additionalProperties': false
+};"
+`;
+
 exports[`type-generator should not transforms in production when disabled 1`] = `
 "import { getSchemaFormType } from '../../../../../src/generatorFunctions';
 interface TestProps {
@@ -22,7 +64,7 @@ const shouldHaveSchema = {
 };"
 `;
 
-exports[`type-generator transforms ./fixtures/manual-converter/type-schema/extended-type-schema copy.ts 1`] = `
+exports[`type-generator transforms ./fixtures/manual-converter/type-schema/extended-type-schema.ts 1`] = `
 "import { ExternalProps } from '../typings';
 import { getSchemaFormType } from '../../../../src/generatorFunctions';
 interface TestProps extends ExternalProps {
@@ -86,7 +128,6 @@ const type3 = {
       'type': 'string'
     }
   },
-  'required': [],
   'additionalProperties': false
 };"
 `;
@@ -144,6 +185,50 @@ const type = {
     }
   },
   'required': ['prop_a', 'ext_prop_1', 'ext_prop_2'],
+  'additionalProperties': false
+};"
+`;
+
+exports[`type-generator transforms ./fixtures/manual-converter/type-schema/skipParseTypeInFiles.ts 1`] = `
+"import { ExternalProps } from '../typings';
+import { getSchemaFormType } from '../../../../src/generatorFunctions';
+interface TestProps {
+  a: HTMLElement;
+  b: string;
+}
+const type = {
+  'type': 'object',
+  'properties': {
+    'a': {
+      'type': 'HTMLElement'
+    },
+    'b': {
+      'type': 'string'
+    }
+  },
+  'required': ['a', 'b'],
+  'additionalProperties': false
+};"
+`;
+
+exports[`type-generator transforms ./fixtures/manual-converter/type-schema/skipParseTypes.ts 1`] = `
+"import { ExternalProps } from '../typings';
+import { getSchemaFormType } from '../../../../src/generatorFunctions';
+interface TestProps {
+  a: HTMLElement;
+  b: string;
+}
+const type = {
+  'type': 'object',
+  'properties': {
+    'a': {
+      'type': 'HTMLElement'
+    },
+    'b': {
+      'type': 'string'
+    }
+  },
+  'required': ['a', 'b'],
   'additionalProperties': false
 };"
 `;

@@ -32,4 +32,34 @@ describe('type-generator', () => {
       ),
     ).toMatchSnapshot();
   });
+
+  it('should merge skipParseTypes items', () => {
+    expect(
+      transform(
+        path.join(
+          __dirname,
+          './fixtures/manual-converter/type-schema/special/skipParseTypes-defaults.ts',
+        ),
+        {},
+        {
+          skipParseTypes: ['HTMLElement'],
+        },
+      ),
+    ).toMatchSnapshot();
+  });
+
+  it('should merge skipParseTypeInFiles items', () => {
+    expect(
+      transform(
+        path.join(
+          __dirname,
+          './fixtures/manual-converter/type-schema/special/skipParseTypeInFiles-defaults.ts',
+        ),
+        {},
+        {
+          skipParseTypeInFiles: ['lib.dom.iterable.d.ts'],
+        },
+      ),
+    ).toMatchSnapshot();
+  });
 });
