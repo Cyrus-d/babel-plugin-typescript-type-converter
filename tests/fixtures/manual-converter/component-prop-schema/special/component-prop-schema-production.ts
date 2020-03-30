@@ -1,5 +1,5 @@
 import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
-import { generateComponentPropsSchema } from '../../../../../src/generatorFunctions';
+import { transformComponentPropsToSchema } from '../../../../../src/transformerFunctions';
 
 export interface ComponentProps {
   prop_a: string;
@@ -10,4 +10,4 @@ const FunctionComponent = (props: ComponentProps) => {
   return null;
 };
 
-generateComponentPropsSchema(FunctionComponent, { generateInProduction: true });
+transformComponentPropsToSchema(FunctionComponent, { generateInProduction: true });

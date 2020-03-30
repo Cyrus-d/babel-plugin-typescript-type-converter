@@ -1,5 +1,5 @@
 import { types as t } from '@babel/core';
-import { GeneratorOptions } from '../typings';
+import { TransformerOptions } from '../typings';
 
 interface Option {
   [key: string]: any;
@@ -30,9 +30,11 @@ const setOtherOptions = (prop: t.ObjectProperty, opts: Option) => {
   }
 };
 
-export const getGeneratorOptions = <T extends t.CallExpression>(node: T): GeneratorOptions<T> => {
+export const getTransformerOptions = <T extends t.CallExpression>(
+  node: T,
+): TransformerOptions<T> => {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  if (!node.arguments) return {} as GeneratorOptions<T>;
+  if (!node.arguments) return {} as TransformerOptions<T>;
 
   return node.arguments.reduce((opts, arg) => {
     if (t.isObjectExpression(arg)) {
@@ -45,5 +47,5 @@ export const getGeneratorOptions = <T extends t.CallExpression>(node: T): Genera
     }
 
     return opts;
-  }, {} as GeneratorOptions<{}>);
+  }, {} as TransformerOptions<{}>);
 };

@@ -1,5 +1,5 @@
 import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
-import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+import { transformComponentPropsToSchema } from '../../../../src/transformerFunctions';
 
 const FunctionComponent = props => {
   return null;
@@ -29,9 +29,9 @@ const MemoForwardRefComponent = memo(
   }),
 );
 
-generateComponentPropsSchema(FunctionComponent);
-generateComponentPropsSchema(SFCComponent);
-generateComponentPropsSchema(ClassComponent);
-generateComponentPropsSchema(MemoComponent);
-generateComponentPropsSchema(ForwardRefComponent);
-generateComponentPropsSchema(MemoForwardRefComponent);
+transformComponentPropsToSchema(FunctionComponent);
+transformComponentPropsToSchema(SFCComponent);
+transformComponentPropsToSchema(ClassComponent);
+transformComponentPropsToSchema(MemoComponent);
+transformComponentPropsToSchema(ForwardRefComponent);
+transformComponentPropsToSchema(MemoForwardRefComponent);

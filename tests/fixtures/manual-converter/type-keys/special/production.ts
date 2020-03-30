@@ -1,9 +1,9 @@
-import { getTypeKeys } from '../../../../../src/generatorFunctions';
+import { transformTypeToKeys } from '../../../../../src/transformerFunctions';
 
 interface TestProps {
   prop_a: string;
   prop_b?: string;
 }
 
-const shouldBeNullValue = getTypeKeys<TestProps>({ generateInProduction: false });
-const shouldHaveKeys = getTypeKeys<TestProps>({ generateInProduction: true });
+const shouldBeNullValue = transformTypeToKeys<TestProps>({ generateInProduction: false });
+const shouldHaveKeys = transformTypeToKeys<TestProps>({ generateInProduction: true });

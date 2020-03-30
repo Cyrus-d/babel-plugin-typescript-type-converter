@@ -1,43 +1,41 @@
 import * as tsJson from 'ts-to-json';
 import { types as t } from '@babel/core';
 import astConverter from 'babel-object-to-ast';
-import * as ts from 'typescript';
-
-import { getGeneratorOptions, getNodeTypesNames, mergeSchema, getTsTypeName } from './utils';
-
+import deepmerge from 'deepmerge';
+import {
+  getTransformerOptions,
+  getNodeTypesNames,
+  mergeSchema,
+  getTsTypeName,
+  createProgram,
+  setModuleDependencies,
+} from './utils';
 import { ConvertState, Path, PluginOptions } from './types';
-import { GeneratorOptions } from './typings';
+import { TransformerOptions } from './typings';
 
-const typeCaches = new Map<string, tsJson.Definition>();
-const programCache = new Map<string, ts.Program>();
-
-export const getSchema = (state: ConvertState, propName: string): tsJson.Definition | undefined => {
-  const typeCacheKey = state.filePath + propName + state.options.maxDepth;
-  const programCacheKey = state.filePath;
-
-  if (typeCaches.get(typeCacheKey)) {
-    return typeCaches.get(typeCacheKey);
-  }
-
+export const getSchema = (
+  filePath: string,
+  propName: string,
+  options: PluginOptions,
+): tsJson.Definition | undefined => {
+  const dependencyFiles: string[] = [];
   const config: tsJson.Config = {
     expose: 'none',
-    // handleUnknownTypes: true,
+    handleUnknownTypes: true,
     jsDoc: 'none',
-    maxDepth: state.options.maxDepth,
-    path: state.filePath,
-    skipFiles: ['lib.dom.d.ts', '@types/react/index.d.ts'],
+    path: filePath,
+    shouldSkipFileTypes: path => {
+      dependencyFiles.push(path);
+
+      return false;
+    },
     skipTypeCheck: true,
     topRef: true,
     type: propName,
+    ...options,
   };
 
-  let program: ts.Program | undefined = programCache.get(programCacheKey);
-
-  if (!program) {
-    program = tsJson.createProgram(config);
-  }
-
-  programCache.set(programCacheKey, program);
+  const program = createProgram(filePath, propName);
 
   const generator = new tsJson.SchemaGenerator(
     program,
@@ -48,46 +46,29 @@ export const getSchema = (state: ConvertState, propName: string): tsJson.Definit
 
   const schema = generator.createSchema(config.type);
 
-  typeCaches.set(typeCacheKey, schema);
+  setModuleDependencies(filePath, dependencyFiles);
+
+  // console.log(JSON.stringify(schema, null, 2));
+  // console.log((schema as any).definitions.ScrollbarProps);
 
   return schema;
-};
-
-const excludeProps = (schema: tsJson.Definition, excludeProps: any[]) => {
-  excludeProps.forEach(prop => {
-    if (schema.properties) delete schema.properties[prop];
-    if (schema.required) schema.required = schema.required.filter(x => x !== prop);
-  });
-};
-
-const includeProps = (schema: tsJson.Definition, includeProps: any[]) => {
-  if (!schema.properties) return;
-  Object.keys(schema.properties).forEach(prop => {
-    if (!includeProps.includes(prop)) {
-      if (schema.properties) delete schema.properties[prop];
-      if (schema.required) schema.required = schema.required.filter(x => x !== prop);
-    }
-  });
 };
 
 export function getSchemaObject<T>(
   node: t.CallExpression,
   state: ConvertState,
   typeNames: string[],
-  options?: GeneratorOptions<T>,
+  options?: TransformerOptions<T>,
 ) {
-  if (options && options.maxDepth) state.options.maxDepth = options?.maxDepth;
+  const newOptions = deepmerge(state.options, options as any);
 
-  const schemaArr = typeNames.map(p => getSchema(state, p));
+  const schemaArr = typeNames.map(p => getSchema(state.filePath, p, newOptions));
 
   if (!schemaArr) return null;
 
   const mergedSchema = mergeSchema(schemaArr as tsJson.Definition[]);
 
   if (!mergedSchema.properties) return null;
-
-  if (options?.excludeProps) excludeProps(mergedSchema, options?.excludeProps);
-  if (options?.includeProps) includeProps(mergedSchema, options?.includeProps);
 
   return mergedSchema;
 }
@@ -106,7 +87,7 @@ export const generateTypeKeys = (
   pluginOptions: PluginOptions,
 ) => {
   const typeNames = getNodeTypesNames(node);
-  const options = getGeneratorOptions(node);
+  const options = getTransformerOptions(node);
 
   if (options?.generateInProduction === false && pluginOptions.isProduction) {
     setNullValue(path, id);
@@ -135,7 +116,7 @@ export const generateTypeSchema = (
   pluginOptions: PluginOptions,
 ) => {
   const typeNames = getNodeTypesNames(node);
-  const options = getGeneratorOptions(node);
+  const options = getTransformerOptions(node);
 
   if (options?.generateInProduction === false && pluginOptions.isProduction) {
     setNullValue(path, id);
@@ -161,7 +142,7 @@ export function generateComponentPropSchema<
   propTypes?: P,
 ) {
   if (!propTypes) return;
-  const options = getGeneratorOptions(generatorNode);
+  const options = getTransformerOptions(generatorNode);
 
   if (
     !pluginOptions.isProduction ||

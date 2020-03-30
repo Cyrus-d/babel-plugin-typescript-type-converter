@@ -1,4 +1,4 @@
-import { getSchemaFormType } from '../../../../src/generatorFunctions';
+import { transformTypeToSchema } from '../../../../src/transformerFunctions';
 
 interface TestProps {
   level_1: {
@@ -8,4 +8,4 @@ interface TestProps {
   };
 }
 
-const type4 = getSchemaFormType<TestProps>({ maxDepth: 2 });
+const type4 = transformTypeToSchema<TestProps>({ maxDepth: 2 });

@@ -1,11 +1,11 @@
 {
-  "name": "babel-plugin-transform-typescript-type",
+  "name": "typescript-type-transformer",
   "version": "1.4.2",
-  "description": "Generate React PropTypes and schema from types.",
-  "repository": "https://github.com/Cyrus-d/babel-plugin-transform-typescript-type",
+  "description": "Transform types to json schema, propTypes and keys.",
+  "repository": "https://github.com/Cyrus-d/typescript-type-transformer",
   "license": "MIT",
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
+  "main": "./index.js",
+  "types": "./lib/transformerFunctions.d.ts",
   "keywords": [
     "babel-plugin",
     "typescript",
@@ -36,7 +36,7 @@
     "@babel/plugin-syntax-typescript": "^7.8.3",
     "babel-object-to-ast": "^2.1.5",
     "deepmerge": "^4.2.2",
-    "ts-to-json": "^0.61.9"
+    "ts-to-json": "^0.63.5"
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",

@@ -1,5 +1,5 @@
 import React, { Component, SFC, memo, Ref, forwardRef } from 'react';
-import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+import { transformComponentPropsToSchema } from '../../../../src/transformerFunctions';
 import { ExternalProps } from '../typings';
 
 export interface ComponentProps extends ExternalProps {
@@ -35,9 +35,9 @@ const MemoForwardRefComponent: SFC<ComponentProps> = memo(
   }),
 );
 
-generateComponentPropsSchema(FunctionComponent);
-generateComponentPropsSchema(SFCComponent);
-generateComponentPropsSchema(ClassComponent);
-generateComponentPropsSchema(MemoComponent);
-generateComponentPropsSchema(ForwardRefComponent);
-generateComponentPropsSchema(MemoForwardRefComponent);
+transformComponentPropsToSchema(FunctionComponent);
+transformComponentPropsToSchema(SFCComponent);
+transformComponentPropsToSchema(ClassComponent);
+transformComponentPropsToSchema(MemoComponent);
+transformComponentPropsToSchema(ForwardRefComponent);
+transformComponentPropsToSchema(MemoForwardRefComponent);

@@ -1,9 +1,9 @@
-import { getSchemaFormType } from '../../../../../src/generatorFunctions';
+import { transformTypeToSchema } from '../../../../../src/transformerFunctions';
 
 interface TestProps {
   prop_a: string;
   prop_b?: string;
 }
 
-const shouldBeNullValue = getSchemaFormType<TestProps>({ generateInProduction: false });
-const shouldHaveSchema = getSchemaFormType<TestProps>({ generateInProduction: true });
+const shouldBeNullValue = transformTypeToSchema<TestProps>({ generateInProduction: false });
+const shouldHaveSchema = transformTypeToSchema<TestProps>({ generateInProduction: true });

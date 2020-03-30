@@ -2,7 +2,7 @@
 
 exports[`prop schema generator should always generate prop schema in production 1`] = `
 "import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
-import { generateComponentPropsSchema } from '../../../../../src/generatorFunctions';
+import { transformComponentPropsToSchema } from '../../../../../src/transformerFunctions';
 export interface ComponentProps {
   prop_a: string;
   prop_b?: boolean;
@@ -29,7 +29,7 @@ FunctionComponent.__propsSchema = {
 
 exports[`prop schema generator should generate prop schema in production 1`] = `
 "import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
-import { generateComponentPropsSchema } from '../../../../../src/generatorFunctions';
+import { transformComponentPropsToSchema } from '../../../../../src/transformerFunctions';
 export interface ComponentProps {
   prop_a: string;
   prop_b?: boolean;
@@ -54,9 +54,11 @@ FunctionComponent.__propsSchema = {
 };"
 `;
 
-exports[`prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/component-empty-interface.ts 1`] = `
+exports[
+  `prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/component-empty-interface.ts 1`
+] = `
 "import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
-import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+import { transformComponentPropsToSchema } from '../../../../src/transformerFunctions';
 export interface ComponentProps {}
 
 const FunctionComponent = (props: ComponentProps) => {
@@ -85,9 +87,11 @@ const MemoForwardRefComponent: SFC<ComponentProps> = memo(forwardRef((props, ref
 }));"
 `;
 
-exports[`prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/component-extends-props.ts 1`] = `
+exports[
+  `prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/component-extends-props.ts 1`
+] = `
 "import React, { Component, SFC, memo, Ref, forwardRef } from 'react';
-import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+import { transformComponentPropsToSchema } from '../../../../src/transformerFunctions';
 import { ExternalProps } from '../typings';
 export interface ComponentProps extends ExternalProps {
   prop_a: string;
@@ -236,9 +240,11 @@ MemoForwardRefComponent.__propsSchema = {
 };"
 `;
 
-exports[`prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/component-mix-props.ts 1`] = `
+exports[
+  `prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/component-mix-props.ts 1`
+] = `
 "import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
-import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+import { transformComponentPropsToSchema } from '../../../../src/transformerFunctions';
 import { ExternalProps } from '../typings';
 export interface ComponentProps {
   prop_a: string;
@@ -387,9 +393,11 @@ MemoForwardRefComponent.__propsSchema = {
 };"
 `;
 
-exports[`prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/component-no-props.ts 1`] = `
+exports[
+  `prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/component-no-props.ts 1`
+] = `
 "import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
-import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+import { transformComponentPropsToSchema } from '../../../../src/transformerFunctions';
 
 const FunctionComponent = props => {
   return null;
@@ -417,9 +425,11 @@ const MemoForwardRefComponent = memo(forwardRef((props, ref: Ref<HTMLDivElement>
 }));"
 `;
 
-exports[`prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/component-prop-schema.ts 1`] = `
+exports[
+  `prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/component-prop-schema.ts 1`
+] = `
 "import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
-import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+import { transformComponentPropsToSchema } from '../../../../src/transformerFunctions';
 export interface ComponentProps {
   prop_a: string;
   prop_b?: boolean;
@@ -531,9 +541,11 @@ MemoForwardRefComponent.__propsSchema = {
 };"
 `;
 
-exports[`prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/component-type-schema.ts 1`] = `
+exports[
+  `prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/component-type-schema.ts 1`
+] = `
 "import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
-import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+import { transformComponentPropsToSchema } from '../../../../src/transformerFunctions';
 import { ExternalProps } from '../typings';
 export interface ComponentProps {
   prop_a: string;
@@ -683,9 +695,11 @@ MemoForwardRefComponent.__propsSchema = {
 };"
 `;
 
-exports[`prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/excludeProps-options.ts 1`] = `
+exports[
+  `prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/excludeProps-options.ts 1`
+] = `
 "import React, { Component, SFC, memo, Ref, forwardRef } from 'react';
-import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+import { transformComponentPropsToSchema } from '../../../../src/transformerFunctions';
 export interface ComponentProps {
   prop_a: string;
   prop_b: string;
@@ -707,9 +721,11 @@ FunctionComponent.__propsSchema = {
 };"
 `;
 
-exports[`prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/includeProps-options.ts 1`] = `
+exports[
+  `prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/includeProps-options.ts 1`
+] = `
 "import React, { Component, SFC, memo, Ref, forwardRef } from 'react';
-import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+import { transformComponentPropsToSchema } from '../../../../src/transformerFunctions';
 export interface ComponentProps {
   prop_a: string;
   prop_b: string;
@@ -731,9 +747,11 @@ FunctionComponent.__propsSchema = {
 };"
 `;
 
-exports[`prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/should-applay-maxDept.ts 1`] = `
+exports[
+  `prop schema generator transforms ./fixtures/manual-converter/component-prop-schema/should-applay-maxDept.ts 1`
+] = `
 "import React, { Component, SFC, memo, Ref, forwardRef } from 'react';
-import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+import { transformComponentPropsToSchema } from '../../../../src/transformerFunctions';
 interface InnerProps {
   level_1: {
     level_2: {

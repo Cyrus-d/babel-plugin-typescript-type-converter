@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`type-generator should merge skipParseTypeInFiles items 1`] = `
-"import { getSchemaFormType } from '../../../../../src/generatorFunctions';
+"import { transformTypeToSchema } from '../../../../../src/transformerFunctions';
 interface TestProps {
   a: HTMLElement;
   b?: AudioParam;
@@ -22,7 +22,7 @@ const type = {
 `;
 
 exports[`type-generator should merge skipParseTypes items 1`] = `
-"import { getSchemaFormType } from '../../../../../src/generatorFunctions';
+"import { transformTypeToSchema } from '../../../../../src/transformerFunctions';
 interface TestProps {
   a: HTMLElement;
   b?: HTMLDivElement;
@@ -43,7 +43,7 @@ const type = {
 `;
 
 exports[`type-generator should not transforms in production when disabled 1`] = `
-"import { getSchemaFormType } from '../../../../../src/generatorFunctions';
+"import { transformTypeToSchema } from '../../../../../src/transformerFunctions';
 interface TestProps {
   prop_a: string;
   prop_b?: string;
@@ -64,9 +64,11 @@ const shouldHaveSchema = {
 };"
 `;
 
-exports[`type-generator transforms ./fixtures/manual-converter/type-schema/extended-type-schema.ts 1`] = `
+exports[
+  `type-generator transforms ./fixtures/manual-converter/type-schema/extended-type-schema.ts 1`
+] = `
 "import { ExternalProps } from '../typings';
-import { getSchemaFormType } from '../../../../src/generatorFunctions';
+import { transformTypeToSchema } from '../../../../src/transformerFunctions';
 interface TestProps extends ExternalProps {
   prop_a: string;
   prop_b?: string;
@@ -92,8 +94,10 @@ const type = {
 };"
 `;
 
-exports[`type-generator transforms ./fixtures/manual-converter/type-schema/interface-schema.ts 1`] = `
-"import { getSchemaFormType } from '../../../../src/generatorFunctions';
+exports[
+  `type-generator transforms ./fixtures/manual-converter/type-schema/interface-schema.ts 1`
+] = `
+"import { transformTypeToSchema } from '../../../../src/transformerFunctions';
 interface TestProps {
   prop_a: string;
   prop_b?: string;
@@ -132,8 +136,10 @@ const type3 = {
 };"
 `;
 
-exports[`type-generator transforms ./fixtures/manual-converter/type-schema/interface-schema-maxDepth.ts 1`] = `
-"import { getSchemaFormType } from '../../../../src/generatorFunctions';
+exports[
+  `type-generator transforms ./fixtures/manual-converter/type-schema/interface-schema-maxDepth.ts 1`
+] = `
+"import { transformTypeToSchema } from '../../../../src/transformerFunctions';
 interface TestProps {
   level_1: {
     level_2: {
@@ -161,9 +167,11 @@ const type4 = {
 };"
 `;
 
-exports[`type-generator transforms ./fixtures/manual-converter/type-schema/mix-type-schema.ts 1`] = `
+exports[
+  `type-generator transforms ./fixtures/manual-converter/type-schema/mix-type-schema.ts 1`
+] = `
 "import { ExternalProps } from '../typings';
-import { getSchemaFormType } from '../../../../src/generatorFunctions';
+import { transformTypeToSchema } from '../../../../src/transformerFunctions';
 interface TestProps {
   prop_a: string;
   prop_b?: string;
@@ -189,9 +197,11 @@ const type = {
 };"
 `;
 
-exports[`type-generator transforms ./fixtures/manual-converter/type-schema/skipParseTypeInFiles.ts 1`] = `
+exports[
+  `type-generator transforms ./fixtures/manual-converter/type-schema/skipParseTypeInFiles.ts 1`
+] = `
 "import { ExternalProps } from '../typings';
-import { getSchemaFormType } from '../../../../src/generatorFunctions';
+import { transformTypeToSchema } from '../../../../src/transformerFunctions';
 interface TestProps {
   a: HTMLElement;
   b: string;
@@ -213,7 +223,7 @@ const type = {
 
 exports[`type-generator transforms ./fixtures/manual-converter/type-schema/skipParseTypes.ts 1`] = `
 "import { ExternalProps } from '../typings';
-import { getSchemaFormType } from '../../../../src/generatorFunctions';
+import { transformTypeToSchema } from '../../../../src/transformerFunctions';
 interface TestProps {
   a: HTMLElement;
   b: string;

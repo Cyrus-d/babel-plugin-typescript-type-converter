@@ -12,7 +12,10 @@ export type PropTypeDeclaration = t.TSTypeReference | t.TSIntersectionType | t.T
 
 export type PropType = t.MemberExpression | t.CallExpression | t.Identifier | t.Literal;
 
-export type TsParserConfig = Omit<Config, 'path' | 'type' | 'skipTypeCheck'>;
+export type TsParserConfig = Omit<
+  Config,
+  'path' | 'type' | 'skipTypeCheck' | 'includeProps' | 'excludeProps'
+>;
 
 export interface PluginOptions extends Partial<TsParserConfig> {
   comments?: boolean;

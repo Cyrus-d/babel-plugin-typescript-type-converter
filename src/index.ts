@@ -16,8 +16,7 @@ import extractTypeProperties from './extractTypeProperties';
 import { TransformerData } from './typings';
 import upsertImport from './upsertImport';
 import { Path, PluginOptions, ConvertState, PropTypeDeclaration } from './types';
-
-export * from './generatorFunctions';
+import { updateSourceFileByPath, updateReferences } from './utils';
 
 const BABEL_VERSION = 7;
 const MAX_DEPTH = 3;
@@ -109,6 +108,7 @@ export default declare((api: any, options: PluginOptions, root: string) => {
             return;
           }
 
+          updateSourceFileByPath(filename);
           // if (options.typeCheck) {
           //   state.typeProgram = loadProgram(options.typeCheck, root);
           //   state.typeChecker = state.typeProgram.getTypeChecker();
@@ -191,14 +191,14 @@ export default declare((api: any, options: PluginOptions, root: string) => {
                   state.airbnbPropTypes.count += 1;
                 }
 
-                if (node.callee.name === 'generateComponentPropsSchema') {
+                if (node.callee.name === 'transformComponentPropsToSchema') {
                   if (node.arguments.length > 0 && t.isIdentifier(node.arguments[0])) {
                     componentsToGeneratePropSchema.push({ name: node.arguments[0].name, node });
                     path.remove();
                   }
                 }
 
-                if (node.callee.name === 'generateComponentPropTypes') {
+                if (node.callee.name === 'transformTypeToPropTypes') {
                   if (node.arguments.length > 0 && t.isIdentifier(node.arguments[0])) {
                     componentsToPropTypes.push(node.arguments[0].name);
                     path.remove();
@@ -423,10 +423,10 @@ export default declare((api: any, options: PluginOptions, root: string) => {
                   }
                 }
 
-                if (t.isIdentifier(init.callee) && init.callee.name === 'getSchemaFormType') {
+                if (t.isIdentifier(init.callee) && init.callee.name === 'transformTypeToSchema') {
                   generateTypeSchema(id, path, init, state, options);
                 }
-                if (t.isIdentifier(init.callee) && init.callee.name === 'getTypeKeys') {
+                if (t.isIdentifier(init.callee) && init.callee.name === 'transformTypeToKeys') {
                   generateTypeKeys(id, path, init, state, options);
                 }
               }
@@ -476,6 +476,7 @@ export default declare((api: any, options: PluginOptions, root: string) => {
             return;
           }
 
+          updateReferences(filename);
           // Remove the `prop-types` import of no components exist,
           // and be sure not to remove pre-existing imports.
           path.get('body').forEach(bodyPath => {

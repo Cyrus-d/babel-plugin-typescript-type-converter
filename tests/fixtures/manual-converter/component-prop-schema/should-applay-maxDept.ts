@@ -1,5 +1,5 @@
 import React, { Component, SFC, memo, Ref, forwardRef } from 'react';
-import { generateComponentPropsSchema } from '../../../../src/generatorFunctions';
+import { transformComponentPropsToSchema } from '../../../../src/transformerFunctions';
 
 interface InnerProps {
   level_1: {
@@ -17,4 +17,4 @@ const FunctionComponent = (props: ComponentProps) => {
   return null;
 };
 
-generateComponentPropsSchema(FunctionComponent, { maxDepth: 2 });
+transformComponentPropsToSchema(FunctionComponent, { maxDepth: 2 });

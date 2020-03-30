@@ -503,12 +503,12 @@ class Example extends React.Component {
 
 Following functions are available to convert types to schema.
 
-- generateComponentPropsSchema
-- getSchemaFormType
-- generateComponentPropTypes
-- getTypeKeys
+- transformComponentPropsToSchema
+- transformTypeToSchema
+- transformTypeToPropTypes
+- transformTypeToKeys
 
-## generateComponentPropsSchema
+## transformComponentPropsToSchema
 
 ### plugin options:
 
@@ -524,7 +524,7 @@ Following functions are available to convert types to schema.
 ### Usage:
 
 ```
-import { generateComponentPropsSchema } from 'babel-plugin-transform-typescript-type';
+import { transformComponentPropsToSchema } from 'babel-plugin-transform-typescript-type';
 
 export interface ComponentProps {
   prop_a: string;
@@ -535,7 +535,7 @@ const FunctionComponent = (props: ComponentProps) => {
   return null;
 };
 
-generateComponentPropsSchema(FunctionComponent);
+transformComponentPropsToSchema(FunctionComponent);
 
 ```
 
@@ -557,7 +557,7 @@ FunctionComponent.__propsSchema = {
 };"
 ```
 
-## getSchemaFormType
+## transformTypeToSchema
 
 ### Function Options
 
@@ -569,14 +569,14 @@ FunctionComponent.__propsSchema = {
 ### Usage:
 
 ```
-import { getSchemaFormType } from 'babel-plugin-transform-typescript-type';
+import { transformTypeToSchema } from 'babel-plugin-transform-typescript-type';
 
 interface TestProps {
   prop_a: string;
   prop_b?: string;
 }
 
-const type = getSchemaFormType<TestProps>();
+const type = transformTypeToSchema<TestProps>();
 ```
 
 Result
@@ -597,7 +597,7 @@ const type = {
 };
 ```
 
-## generateComponentPropTypes
+## transformTypeToPropTypes
 
 ### plugin options:
 
@@ -606,7 +606,7 @@ const type = {
 ### Usage:
 
 ```
-import { generateComponentPropTypes } from 'babel-plugin-transform-typescript-type';
+import { transformTypeToPropTypes } from 'babel-plugin-transform-typescript-type';
 
 export interface ComponentProps {
   prop_a: string;
@@ -616,7 +616,7 @@ export interface ComponentProps {
 const FunctionComponent = (props: ComponentProps) => {
   return null;
 };
-generateComponentPropTypes(FunctionComponent);
+transformTypeToPropTypes(FunctionComponent);
 
 ```
 
@@ -629,19 +629,19 @@ FunctionComponent.propTypes = {
 };"
 ```
 
-## getTypeKeys
+## transformTypeToKeys
 
 ### Usage:
 
 ```
-import { getTypeKeys } from 'babel-plugin-transform-typescript-type';
+import { transformTypeToKeys } from 'babel-plugin-transform-typescript-type';
 
 interface TestProps {
   prop_a: string;
   prop_b?: string;
 }
 
-const type = getTypeKeys<TestProps>();
+const type = transformTypeToKeys<TestProps>();
 ```
 
 Result:

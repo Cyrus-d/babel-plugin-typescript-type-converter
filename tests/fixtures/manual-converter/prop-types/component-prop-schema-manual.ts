@@ -1,5 +1,5 @@
 import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
-import { generateComponentPropTypes } from '../../../../src/generatorFunctions';
+import { transformTypeToPropTypes } from '../../../../src/transformerFunctions';
 
 export interface ComponentProps {
   prop_a: string;
@@ -9,4 +9,4 @@ export interface ComponentProps {
 const FunctionComponent = (props: ComponentProps) => {
   return null;
 };
-generateComponentPropTypes(FunctionComponent);
+transformTypeToPropTypes(FunctionComponent);
