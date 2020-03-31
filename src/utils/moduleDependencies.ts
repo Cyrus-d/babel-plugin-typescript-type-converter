@@ -6,19 +6,19 @@ export interface Dependencies {
 }
 
 const moduleDependencies = new Map<string, Set<string>>();
-const importedModules = new Map<string, Set<string>>();
+const moduleReferences = new Map<string, Set<string>>();
 
 const cleanModuleDependencies = (modulePath: string) => {
   const oldDeps = moduleDependencies.get(modulePath);
   if (!oldDeps) return;
   oldDeps.forEach(importPath => {
-    const importModule = importedModules.get(importPath);
+    const importModule = moduleReferences.get(importPath);
 
     if (importModule) {
       importModule.delete(modulePath);
 
       if (importModule.size === 0) {
-        importedModules.delete(importPath);
+        moduleReferences.delete(importPath);
       }
     }
   });
@@ -26,40 +26,52 @@ const cleanModuleDependencies = (modulePath: string) => {
   moduleDependencies.delete(modulePath);
 };
 
-export const setImportedModuleParent = (importedModulePath: string, parentModule: string) => {
-  const importPath = fixPath(importedModulePath);
+export const setModuleReferences = (modulePath: string, refModule: string) => {
+  modulePath = fixPath(modulePath);
 
-  const importedModule = importedModules.get(importPath);
+  const module = moduleReferences.get(modulePath);
 
-  if (importedModule) {
-    importedModule.add(importPath);
+  if (module) {
+    module.add(refModule);
   } else {
-    importedModules.set(importPath, new Set<string>().add(parentModule));
+    moduleReferences.set(modulePath, new Set<string>().add(refModule));
   }
 };
 
 export const setModuleDependencies = async (modulePath: string, dependencies: string[]) => {
   modulePath = fixPath(modulePath);
-  if (dependencies.length === 0) return;
-
-  const dependencySet = new Set<string>();
 
   cleanModuleDependencies(modulePath);
+
+  if (dependencies.length === 0) {
+    return;
+  }
+
+  const dependencySet = new Set<string>();
 
   new Set(dependencies).forEach(dep => {
     const importPath = fixPath(dep);
     if (modulePath !== importPath) {
       dependencySet.add(importPath);
 
-      setImportedModuleParent(importPath, modulePath);
+      setModuleReferences(importPath, modulePath);
     }
   });
 
   moduleDependencies.set(modulePath, dependencySet);
 };
 
+export const getModuleDependencies = (modulePath: string) => {
+  return moduleDependencies.get(modulePath);
+};
+
 export const getModuleReferences = (modulePath: string) => {
   modulePath = fixPath(modulePath);
+  const modules = moduleReferences.get(modulePath);
 
-  return importedModules.get(modulePath);
+  return modules;
+};
+
+export const getAllModuleReferences = () => {
+  return moduleReferences;
 };
