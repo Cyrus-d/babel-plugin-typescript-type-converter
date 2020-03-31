@@ -7,7 +7,7 @@ import {
 
 describe('moduleDependencies', () => {
   const moduleWithDependencies = 'module-with-dependencies';
-  const moduleWithDependencies_2 = moduleWithDependencies + '-2';
+  const moduleWithDependencies2 = `${moduleWithDependencies}-2`;
   let dependencies = ['d-1', 'd-2'];
 
   setModuleDependencies(moduleWithDependencies, dependencies);
@@ -22,7 +22,7 @@ describe('moduleDependencies', () => {
     dependencies = dependencies.slice(1);
     setModuleDependencies(moduleWithDependencies, dependencies);
     expect([...getModuleDependencies(moduleWithDependencies)]).toStrictEqual(dependencies);
-    expect(getModuleReferences('d-1')).toStrictEqual(undefined);
+    expect(getModuleReferences('d-1')).toBeUndefined();
     expect([...getModuleReferences('d-2')]).toStrictEqual([moduleWithDependencies]);
   });
 
@@ -30,35 +30,37 @@ describe('moduleDependencies', () => {
     dependencies.push('d-3');
     setModuleDependencies(moduleWithDependencies, dependencies);
     expect([...getModuleDependencies(moduleWithDependencies)]).toStrictEqual(dependencies);
-    expect(getModuleReferences('d-1')).toStrictEqual(undefined);
+    expect(getModuleReferences('d-1')).toBeUndefined();
     expect([...getModuleReferences('d-2')]).toStrictEqual([moduleWithDependencies]);
     expect([...getModuleReferences('d-3')]).toStrictEqual([moduleWithDependencies]);
   });
 
   it('should add new module', () => {
-    setModuleDependencies(moduleWithDependencies_2, dependencies);
+    setModuleDependencies(moduleWithDependencies2, dependencies);
 
-    expect([...getModuleDependencies(moduleWithDependencies_2)]).toStrictEqual(dependencies);
+    expect([...getModuleDependencies(moduleWithDependencies2)]).toStrictEqual(dependencies);
     expect([...getModuleReferences('d-2')]).toStrictEqual([
       moduleWithDependencies,
-      moduleWithDependencies_2,
+      moduleWithDependencies2,
     ]);
     expect([...getModuleReferences('d-3')]).toStrictEqual([
       moduleWithDependencies,
-      moduleWithDependencies_2,
+      moduleWithDependencies2,
     ]);
   });
 
   it('should remove module', () => {
     setModuleDependencies(moduleWithDependencies, []);
-    expect(getModuleDependencies(moduleWithDependencies)).toStrictEqual(undefined);
-    expect([...getModuleReferences('d-2')]).toStrictEqual([moduleWithDependencies_2]);
-    expect([...getModuleReferences('d-3')]).toStrictEqual([moduleWithDependencies_2]);
+    expect(getModuleDependencies(moduleWithDependencies)).toBeUndefined();
+    expect([...getModuleReferences('d-2')]).toStrictEqual([moduleWithDependencies2]);
+    expect([...getModuleReferences('d-3')]).toStrictEqual([moduleWithDependencies2]);
   });
 
   it('should remove reference', () => {
     dependencies = dependencies.slice(1);
-    setModuleDependencies(moduleWithDependencies_2, dependencies);
+    setModuleDependencies(moduleWithDependencies2, dependencies);
     expect([...getAllModuleReferences()]).toHaveLength(1);
   });
+
+  it.todo('should change file modified date');
 });

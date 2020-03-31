@@ -17,11 +17,11 @@
     "build": "tsc",
     "watch": "tsc -w",
     "coverage": "yarn run jest --coverage",
-    "eslint": "eslint '{src,test,factory}/**/*.ts'",
+    "lint": "eslint . --ext .tsx,.ts",
     "test": "jest tests/ --verbose",
     "prettier": "yarn run prettier",
     "prerelease": "yarn test && yarn run build",
-    "posttest": "yarn run eslint"
+    "posttest": "yarn run lint"
   },
   "peerDependencies": {
     "@babel/core": "^7.0.0",
@@ -48,6 +48,9 @@
     "@types/node": "^13.7.7",
     "@types/prop-types": "^15.7.3",
     "@types/react": "^16.9.23",
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
+    "eslint": "^6.8.0",
     "fast-glob": "^3.2.2",
     "prop-types": "^15.7.2",
     "typescript": "^3.8.3"

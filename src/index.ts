@@ -9,6 +9,7 @@ import { addDefault, addNamed } from '@babel/helper-module-imports';
 import syntaxTypeScript from '@babel/plugin-syntax-typescript';
 import { types as t } from '@babel/core';
 import { TSTypeParameterInstantiation } from '@babel/types';
+import { Config } from 'ts-to-json';
 import { generateTypeSchema, generateComponentPropSchema, generateTypeKeys } from './getSchema';
 import addToClass from './addToClass';
 import addToFunctionOrVar from './addToFunctionOrVar';
@@ -103,16 +104,11 @@ export default declare((api: any, options: PluginOptions, root: string) => {
           const state = (this as any).state as ConvertState;
 
           state.filePath = filename;
-
           if (isNotTS(filename)) {
             return;
           }
 
-          updateSourceFileByPath(filename);
-          // if (options.typeCheck) {
-          //   state.typeProgram = loadProgram(options.typeCheck, root);
-          //   state.typeChecker = state.typeProgram.getTypeChecker();
-          // }
+          updateSourceFileByPath(options as Config, filename);
 
           // Find existing `react` and `prop-types` imports
           programPath.node.body.forEach(node => {
@@ -475,7 +471,7 @@ export default declare((api: any, options: PluginOptions, root: string) => {
           if (isNotTS(filename)) {
             return;
           }
-
+          // console.log(filename);
           updateReferences(filename);
           // Remove the `prop-types` import of no components exist,
           // and be sure not to remove pre-existing imports.

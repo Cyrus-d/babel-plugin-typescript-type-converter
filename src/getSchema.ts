@@ -2,6 +2,7 @@ import * as tsJson from 'ts-to-json';
 import { types as t } from '@babel/core';
 import astConverter from 'babel-object-to-ast';
 import deepmerge from 'deepmerge';
+import * as ts from 'typescript';
 import {
   getTransformerOptions,
   getNodeTypesNames,
@@ -10,6 +11,7 @@ import {
   createProgram,
   setModuleDependencies,
 } from './utils';
+
 import { ConvertState, Path, PluginOptions } from './types';
 import { TransformerOptions } from './typings';
 
@@ -19,15 +21,17 @@ export const getSchema = (
   options: PluginOptions,
 ): tsJson.Definition | undefined => {
   const dependencyFiles: string[] = [];
+
   const config: tsJson.Config = {
     expose: 'none',
     handleUnknownTypes: true,
     jsDoc: 'none',
     path: filePath,
-    shouldSkipFileTypes: path => {
+    shouldParseNode: (node: ts.Node) => {
+      const path = node.getSourceFile().fileName;
       dependencyFiles.push(path);
 
-      return false;
+      return true;
     },
     skipTypeCheck: true,
     topRef: true,
@@ -35,7 +39,7 @@ export const getSchema = (
     ...options,
   };
 
-  const program = createProgram(filePath, propName);
+  const program = createProgram(filePath);
 
   const generator = new tsJson.SchemaGenerator(
     program,

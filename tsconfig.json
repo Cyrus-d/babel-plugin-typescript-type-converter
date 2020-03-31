@@ -6,10 +6,7 @@
     "esModuleInterop": true,
     "experimentalDecorators": false,
     "forceConsistentCasingInFileNames": true,
-    "lib": [
-      "dom",
-      "esnext"
-    ],
+    "lib": ["dom", "esnext"],
     "module": "commonjs",
     "noEmitOnError": true,
     "noImplicitReturns": true,
@@ -21,12 +18,6 @@
     "useDefineForClassFields": false,
     "outDir": "./lib"
   },
-  "include": [
-    "./src/**/*",
-    "./types/**/*"
-  ],
-  "exclude": [
-    "./tests/fixtures/**/*",
-    "./tests/**/*"
-  ]
+  "include": ["./src/**/*", "./types/**/*"],
+  "exclude": ["./tests/fixtures/**/*", "./tests/**/*"]
 }
