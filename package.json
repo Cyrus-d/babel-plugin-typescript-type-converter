@@ -14,16 +14,13 @@
     "react"
   ],
   "scripts": {
-    "build": "beemo typescript",
+    "build": "tsc",
+    "watch": "tsc -w",
     "coverage": "yarn run jest --coverage",
-    "eslint": "beemo eslint",
-    "jest": "beemo jest",
-    "prettier": "beemo prettier",
-    "release": "npx np --yolo --no-yarn",
-    "type": "beemo typescript --noEmit",
+    "eslint": "eslint '{src,test,factory}/**/*.ts'",
+    "test": "jest tests/ --verbose",
+    "prettier": "yarn run prettier",
     "prerelease": "yarn test && yarn run build",
-    "pretest": "yarn run type",
-    "test": "yarn run jest",
     "posttest": "yarn run eslint"
   },
   "peerDependencies": {
@@ -36,7 +33,7 @@
     "@babel/plugin-syntax-typescript": "^7.8.3",
     "babel-object-to-ast": "^2.1.5",
     "deepmerge": "^4.2.2",
-    "ts-to-json": "^0.63.5"
+    "ts-to-json": "^0.63.6"
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",
@@ -51,76 +48,8 @@
     "@types/node": "^13.7.7",
     "@types/prop-types": "^15.7.3",
     "@types/react": "^16.9.23",
-    "conventional-changelog-beemo": "^1.6.0",
     "fast-glob": "^3.2.2",
     "prop-types": "^15.7.2",
     "typescript": "^3.8.3"
-  },
-  "beemo": {
-    "module": "@milesj/build-tools",
-    "drivers": [
-      "babel",
-      "eslint",
-      "jest",
-      "prettier",
-      "typescript"
-    ],
-    "settings": {
-      "node": true
-    },
-    "babel": {
-      "sourceType": "module",
-      "ignore": [
-        "tests/fixtures/**/*.js"
-      ]
-    },
-    "eslint": {
-      "rules": {
-        "complexity": "off",
-        "no-shadow": "off",
-        "no-param-reassign": "off",
-        "no-use-before-define": "off",
-        "react/forbid-foreign-prop-types": "off",
-        "typescript/no-use-before-define": "off",
-        "import/no-extraneous-dependencies": "off"
-      },
-      "ignore": [
-        "tests/fixtures/"
-      ],
-      "overrides": [
-        {
-          "files": [
-            "*.ts"
-          ],
-          "rules": {
-            "@typescript-eslint/no-explicit-any": "off"
-          }
-        }
-      ]
-    },
-    "jest": {
-      "testPathIgnorePatterns": [
-        "/node_modules/",
-        "/tests/fixtures/"
-      ],
-      "testEnvironment": "node",
-      "transformIgnorePatterns": [
-        "/node_modules/",
-        "/tests/fixtures/"
-      ],
-      "modulePathIgnorePatterns": [
-        "/node_modules/",
-        "/tests/fixtures/"
-      ]
-    },
-    "typescript": {
-      "compilerOptions": {
-        "sourceMap": true
-      },
-      "exclude": [
-        "./tests/fixtures/**/*",
-        "./tests/**/*"
-      ]
-    }
   }
 }
