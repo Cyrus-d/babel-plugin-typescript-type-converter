@@ -115,15 +115,24 @@ when building a library. Requires either the `@babel/plugin-syntax-jsx` plugin o
 
 ```tsx
 // babel.config.js
-const plugins = [];
-
-if (process.env.NODE_ENV !== 'production') {
-  plugins.push('babel-plugin-transform-typescript-type');
-}
+const plugins = [
+  [
+    'babel-plugin-transform-typescript-type',
+     isProduction: process.env.NODE_ENV === 'production',
+  ]
+];
 
 module.exports = {
   // Required
-  presets: ['@babel/preset-typescript', '@babel/preset-react']
+  presets: [
+    [
+      '@babel/preset-typescript',
+      {
+        onlyRemoveTypeImports: true,
+      },
+    ],
+     '@babel/preset-react'
+  ]
   plugins,
 };
 ```
