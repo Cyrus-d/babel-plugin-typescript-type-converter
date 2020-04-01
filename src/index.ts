@@ -442,8 +442,8 @@ export default declare((api: any, options: PluginOptions, root: string) => {
           transformerData.forEach(data => {
             const { path, name, state, propsType } = data;
             if (
-              (!options.isProduction || options.generateReactPropTypesInProduction) &&
-              (!options.generateReactPropTypesManually || componentsToPropTypes.includes(name))
+              (!options.isProduction || options.transformReactPropTypesInProduction) &&
+              (!options.transformReactPropTypesManually || componentsToPropTypes.includes(name))
             ) {
               if (t.isClassDeclaration(path.node) || t.isClassExpression(path.node)) {
                 addToClass(path.node, state);

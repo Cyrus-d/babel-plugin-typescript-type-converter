@@ -1,10 +1,15 @@
+/* eslint-disable @typescript-eslint/triple-slash-reference */
+// eslint-disable-next-line spaced-comment
+/// <reference path="../types/global.d.ts" />
+
+import { Definition } from 'ts-to-json';
 import { TransformerOptions } from './typings';
 
 export function transformComponentPropsToSchema<T>(component: T, options?: TransformerOptions<T>) {}
 
 export function transformTypeToSchema<T>(options?: TransformerOptions<T>) {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  return {} as T;
+  return {} as Definition;
 }
 
 export function transformTypeToPropTypes<T>(component: T) {}
@@ -17,3 +22,5 @@ type TypeKeysOptions<T> = Pick<
 export function transformTypeToKeys<T>(options?: TypeKeysOptions<T>) {
   return ([] as unknown) as keyof T;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-namespace

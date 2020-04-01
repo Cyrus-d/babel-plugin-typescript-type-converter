@@ -93,7 +93,7 @@ export const generateTypeKeys = (
   const typeNames = getNodeTypesNames(node);
   const options = getTransformerOptions(node);
 
-  if (options?.generateInProduction === false && pluginOptions.isProduction) {
+  if (options?.transformInProduction === false && pluginOptions.isProduction) {
     setNullValue(path, id);
 
     return;
@@ -122,7 +122,7 @@ export const generateTypeSchema = (
   const typeNames = getNodeTypesNames(node);
   const options = getTransformerOptions(node);
 
-  if (options?.generateInProduction === false && pluginOptions.isProduction) {
+  if (options?.transformInProduction === false && pluginOptions.isProduction) {
     setNullValue(path, id);
 
     return;
@@ -150,8 +150,8 @@ export function generateComponentPropSchema<
 
   if (
     !pluginOptions.isProduction ||
-    pluginOptions.generateReactPropsSchemaInProduction ||
-    options?.generateInProduction
+    pluginOptions.transformReactPropsSchemaInProduction ||
+    options?.transformInProduction
   ) {
     const typeNames = getTsTypeName(propTypes as t.TSIntersectionType);
     const schema = getSchemaObject(generatorNode, state, typeNames, options);
@@ -164,7 +164,7 @@ export function generateComponentPropSchema<
       t.expressionStatement(
         t.assignmentExpression(
           '=',
-          t.memberExpression(t.identifier(componentName), t.identifier('__propsSchema')),
+          t.memberExpression(t.identifier(componentName), t.identifier('__propSchema')),
           schemaObject,
         ),
       ),

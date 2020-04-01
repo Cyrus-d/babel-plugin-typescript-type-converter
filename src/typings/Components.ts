@@ -1,3 +1,5 @@
-export type GetComponentProps<T> = T extends React.ComponentType<infer P> | React.Component<infer P>
+import { ComponentType, Component } from 'react';
+
+export type GetComponentProps<T> = T extends ComponentType<infer P> | Component<infer P>
   ? P
   : never;

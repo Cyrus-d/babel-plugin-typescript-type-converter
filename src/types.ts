@@ -30,9 +30,9 @@ export interface PluginOptions extends Partial<TsParserConfig> {
   must provide this option to determinate what process need to be continue in production environment
   */
   isProduction?: boolean;
-  generateReactPropTypesInProduction?: boolean;
-  generateReactPropTypesManually?: boolean;
-  generateReactPropsSchemaInProduction?: boolean;
+  transformReactPropTypesInProduction?: boolean;
+  transformReactPropTypesManually?: boolean;
+  transformReactPropsSchemaInProduction?: boolean;
 }
 
 export interface ConvertState {
