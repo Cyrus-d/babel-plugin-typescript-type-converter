@@ -2,7 +2,7 @@
 
 exports[`type-generator should not transforms in production when disabled 1`] = `
 "import { transformTypeToKeys } from '../../../../../src/transformerFunctions';
-interface TestProps {
+export interface TestProps {
   prop_a: string;
   prop_b?: string;
 }
@@ -12,7 +12,7 @@ const shouldHaveKeys = ['prop_a', 'prop_b'];"
 
 exports[`type-generator transforms ./fixtures/manual-converter/type-keys/interface-keys.ts 1`] = `
 "import { transformTypeToKeys } from '../../../../src/transformerFunctions';
-interface TestProps {
+export interface TestProps {
   prop_a: string;
   prop_b?: string;
 }
@@ -23,7 +23,7 @@ exports[
   `type-generator transforms ./fixtures/manual-converter/type-keys/interface-keys-options.ts 1`
 ] = `
 "import { transformTypeToKeys } from '../../../../src/transformerFunctions';
-interface TestProps {
+export interface TestProps {
   prop_a: string;
   prop_b?: string;
 }

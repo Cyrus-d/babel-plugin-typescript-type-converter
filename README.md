@@ -580,7 +580,7 @@ FunctionComponent.__propSchema = {
 ```
 import { transformTypeToSchema } from 'babel-plugin-transform-typescript-type';
 
-interface TestProps {
+export interface TestProps {
   prop_a: string;
   prop_b?: string;
 }
@@ -645,7 +645,7 @@ FunctionComponent.propTypes = {
 ```
 import { transformTypeToKeys } from 'babel-plugin-transform-typescript-type';
 
-interface TestProps {
+export interface TestProps {
   prop_a: string;
   prop_b?: string;
 }

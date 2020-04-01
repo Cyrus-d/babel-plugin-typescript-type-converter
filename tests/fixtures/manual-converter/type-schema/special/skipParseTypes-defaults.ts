@@ -1,6 +1,6 @@
 import { transformTypeToSchema } from '../../../../../src/transformerFunctions';
 
-interface TestProps {
+export interface TestProps {
   a: HTMLElement;
   b?: HTMLDivElement;
 }

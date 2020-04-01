@@ -1,6 +1,6 @@
 import { transformTypeToKeys } from '../../../../../src/transformerFunctions';
 
-interface TestProps {
+export interface TestProps {
   prop_a: string;
   prop_b?: string;
 }

@@ -1,7 +1,7 @@
 import { ExternalProps } from '../typings';
 import { transformTypeToSchema } from '../../../../src/transformerFunctions';
 
-interface TestProps {
+export interface TestProps {
   a: HTMLElement;
   b: string;
 }
