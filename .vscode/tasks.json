@@ -1,0 +1,31 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Monitor TS Errors",
+      "type": "typescript",
+      "tsconfig": "tsconfig.json",
+      "option": "watch",
+      "problemMatcher": ["$tsc-watch"],
+      "presentation": {
+        "group": "watch",
+        "panel": "shared"
+      },
+      "auto": true
+    },
+    {
+      "label": "Watch test file",
+      "type": "shell",
+      "command": "jest --watch ${fileBasename} --coverage --collectCoverageOnlyFrom=${fileBasename}",
+      "presentation": {
+        "group": "watch",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "test current file",
+      "type": "shell",
+      "command": "jest ${fileBasename}"
+    }
+  ]
+}
