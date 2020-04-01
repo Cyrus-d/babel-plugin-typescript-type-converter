@@ -10,4 +10,4 @@ const FunctionComponent = (props: ComponentProps) => {
   return null;
 };
 
-transformComponentPropsToSchema(FunctionComponent, { generateInProduction: true });
+transformComponentPropsToSchema(FunctionComponent, { transformInProduction: true });

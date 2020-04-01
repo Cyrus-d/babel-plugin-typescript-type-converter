@@ -5,5 +5,5 @@ interface TestProps {
   prop_b?: string;
 }
 
-const shouldBeNullValue = transformTypeToKeys<TestProps>({ generateInProduction: false });
-const shouldHaveKeys = transformTypeToKeys<TestProps>({ generateInProduction: true });
+const shouldBeNullValue = transformTypeToKeys<TestProps>({ transformInProduction: false });
+const shouldHaveKeys = transformTypeToKeys<TestProps>({ transformInProduction: true });

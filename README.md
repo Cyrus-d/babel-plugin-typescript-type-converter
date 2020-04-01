@@ -528,7 +528,7 @@ Following functions are available to convert types to schema.
 - excludeProps?: string[];
 - includeProps?: string[];
 - maxDepth?: number;
-- generateInProduction?: boolean;
+- transformInProduction?: boolean;
 
 ### Usage:
 
@@ -551,7 +551,7 @@ transformComponentPropsToSchema(FunctionComponent);
 Result:
 
 ```
-FunctionComponent.__propsSchema = {
+FunctionComponent.__propSchema = {
   'type': 'object',
   'properties': {
     'prop_a': {
@@ -573,7 +573,7 @@ FunctionComponent.__propsSchema = {
 - excludeProps?: string[];
 - includeProps?: string[];
 - maxDepth?: number;
-- generateInProduction?: boolean;
+- transformInProduction?: boolean;
 
 ### Usage:
 

@@ -150,7 +150,7 @@ export function generateComponentPropSchema<
 
   if (
     !pluginOptions.isProduction ||
-    pluginOptions.transformReactPropsSchemaInProduction ||
+    pluginOptions.transformReactPropSchemaInProduction ||
     options?.transformInProduction
   ) {
     const typeNames = getTsTypeName(propTypes as t.TSIntersectionType);

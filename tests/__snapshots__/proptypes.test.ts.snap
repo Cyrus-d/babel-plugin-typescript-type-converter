@@ -19,18 +19,6 @@ FunctionComponent.propTypes = {
 };"
 `;
 
-exports[`prop types should not transforms when generateReactPropTypesManually=true 1`] = `
-"import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
-export interface ComponentProps {
-  prop_a: string;
-  prop_b?: boolean;
-}
-
-const FunctionComponent = (props: ComponentProps) => {
-  return null;
-};"
-`;
-
 exports[`prop types should not transforms when is in Production 1`] = `
 "import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
 export interface ComponentProps {
@@ -43,7 +31,19 @@ const FunctionComponent = (props: ComponentProps) => {
 };"
 `;
 
-exports[`prop types should transforms when generateReactPropTypesInProduction=true 1`] = `
+exports[`prop types should not transforms when transformReactPropTypesManually=true 1`] = `
+"import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
+export interface ComponentProps {
+  prop_a: string;
+  prop_b?: boolean;
+}
+
+const FunctionComponent = (props: ComponentProps) => {
+  return null;
+};"
+`;
+
+exports[`prop types should transforms when is not in production 1`] = `
 "import _pt from 'prop-types';
 import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
 export interface ComponentProps {
@@ -61,7 +61,7 @@ FunctionComponent.propTypes = {
 };"
 `;
 
-exports[`prop types should transforms when is not in production 1`] = `
+exports[`prop types should transforms when transformReactPropTypesInProduction=true 1`] = `
 "import _pt from 'prop-types';
 import React, { Component, SFC, memo, forwardRef, Ref } from 'react';
 export interface ComponentProps {

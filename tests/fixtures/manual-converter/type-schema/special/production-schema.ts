@@ -5,5 +5,5 @@ interface TestProps {
   prop_b?: string;
 }
 
-const shouldBeNullValue = transformTypeToSchema<TestProps>({ generateInProduction: false });
-const shouldHaveSchema = transformTypeToSchema<TestProps>({ generateInProduction: true });
+const shouldBeNullValue = transformTypeToSchema<TestProps>({ transformInProduction: false });
+const shouldHaveSchema = transformTypeToSchema<TestProps>({ transformInProduction: true });

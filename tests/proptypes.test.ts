@@ -26,25 +26,25 @@ describe('prop types', () => {
     ).toMatchSnapshot();
   });
 
-  it('should not transforms when generateReactPropTypesManually=true', () => {
+  it('should not transforms when transformReactPropTypesManually=true', () => {
     expect(
       transform(
         path.join(__dirname, './fixtures/manual-converter/prop-types/component-prop-schema.ts'),
         {},
         {
-          generateReactPropTypesManually: true,
+          transformReactPropTypesManually: true,
         },
       ),
     ).toMatchSnapshot();
   });
 
-  it('should transforms when generateReactPropTypesInProduction=true', () => {
+  it('should transforms when transformReactPropTypesInProduction=true', () => {
     expect(
       transform(
         path.join(__dirname, './fixtures/manual-converter/prop-types/component-prop-schema.ts'),
         {},
         {
-          generateReactPropTypesInProduction: true,
+          transformReactPropTypesInProduction: true,
           isProduction: true,
         },
       ),
@@ -60,7 +60,7 @@ describe('prop types', () => {
         ),
         {},
         {
-          generateReactPropTypesManually: true,
+          transformReactPropTypesManually: true,
         },
       ),
     ).toMatchSnapshot();

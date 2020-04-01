@@ -16,7 +16,7 @@ describe('prop schema generator', () => {
       }
       it(`transforms ${filePath}`, () => {
         expect(
-          transform(path.join(__dirname, filePath), {}, { generateReactPropTypesManually: true }),
+          transform(path.join(__dirname, filePath), {}, { transformReactPropTypesManually: true }),
         ).toMatchSnapshot();
       });
     });
@@ -46,7 +46,8 @@ describe('prop schema generator', () => {
         {},
         {
           isProduction: true,
-          generateReactPropsSchemaInProduction: true,
+          transformReactPropTypesManually: true,
+          transformReactPropSchemaInProduction: true,
         },
       ),
     ).toMatchSnapshot();

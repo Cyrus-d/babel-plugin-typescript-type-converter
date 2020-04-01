@@ -13,7 +13,7 @@ describe('type-generator', () => {
       }
       it(`transforms ${filePath}`, () => {
         expect(
-          transform(path.join(__dirname, filePath), {}, { generateReactPropTypesManually: true }),
+          transform(path.join(__dirname, filePath), {}, { transformReactPropTypesManually: true }),
         ).toMatchSnapshot();
       });
     });

@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/triple-slash-reference */
-// eslint-disable-next-line spaced-comment
-/// <reference path="../types/global.d.ts" />
-
 import { Definition } from 'ts-to-json';
 import { TransformerOptions } from './typings';
 
@@ -22,5 +18,3 @@ type TypeKeysOptions<T> = Pick<
 export function transformTypeToKeys<T>(options?: TypeKeysOptions<T>) {
   return ([] as unknown) as keyof T;
 }
-
-// eslint-disable-next-line @typescript-eslint/no-namespace

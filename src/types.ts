@@ -32,7 +32,7 @@ export interface PluginOptions extends Partial<TsParserConfig> {
   isProduction?: boolean;
   transformReactPropTypesInProduction?: boolean;
   transformReactPropTypesManually?: boolean;
-  transformReactPropsSchemaInProduction?: boolean;
+  transformReactPropSchemaInProduction?: boolean;
 }
 
 export interface ConvertState {
