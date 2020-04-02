@@ -1,8 +1,7 @@
-import * as path from 'path';
 import * as fs from 'fs';
 import * as ts from 'typescript';
 import { createProgram, Config } from 'ts-to-json';
-import { fixPath } from '.';
+import { getFileKey } from '.';
 
 interface SourceFileObject {
   [key: string]: ts.SourceFile;
@@ -22,7 +21,8 @@ export const initiateSourceFile = (config: Config, root: string) => {
   if (config.skipTypeCheck === undefined) config.skipTypeCheck = true;
   const program = createProgram(config);
   sourceFilesCache = program.getSourceFiles().reduce((obj, sourceFile) => {
-    obj[sourceFile.fileName] = sourceFile;
+    const fileKey = getFileKey(sourceFile.fileName);
+    obj[fileKey] = sourceFile;
 
     return obj;
   }, {} as SourceFileObject);
@@ -37,10 +37,10 @@ const getSourceFileText = (fileName: string) => {
 };
 
 export const getSourceFile = (fileName: string) => {
-  if (path.isAbsolute(fileName)) {
+  if (sourceFilesCache[fileName]) {
     return sourceFilesCache[fileName];
   }
-
+  // for library names line lib.dom.iterable.d.ts
   const file = Object.keys(sourceFilesCache).find(x => x.endsWith(fileName));
   if (file) return sourceFilesCache[file];
 
@@ -48,9 +48,9 @@ export const getSourceFile = (fileName: string) => {
 };
 
 export const createSourceFile = (fileName: string, forceUpdate?: boolean) => {
-  fileName = fixPath(fileName);
+  const fileKey = getFileKey(fileName);
   if (!forceUpdate) {
-    const sourceFile = getSourceFile(fileName);
+    const sourceFile = getSourceFile(fileKey);
     if (sourceFile) {
       return sourceFile;
     }
@@ -59,7 +59,7 @@ export const createSourceFile = (fileName: string, forceUpdate?: boolean) => {
   const text = getSourceFileText(fileName);
   if (text === null) return undefined;
   const sourceFile = ts.createSourceFile(fileName, text, tsconfig.target!, true, ts.ScriptKind.TS);
-  sourceFilesCache[fileName] = sourceFile;
+  sourceFilesCache[fileKey] = sourceFile;
 
   return sourceFile;
 };

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/require-await */
-import { fixPath } from './fixPath';
+import { getFileKey } from './getFileKey';
 
 export interface Dependencies {
   [k: string]: Dependencies;
@@ -8,40 +8,40 @@ export interface Dependencies {
 const moduleDependencies = new Map<string, Set<string>>();
 const moduleReferences = new Map<string, Set<string>>();
 
-const cleanModuleDependencies = (modulePath: string) => {
-  const oldDeps = moduleDependencies.get(modulePath);
+const cleanModuleDependencies = (moduleKey: string) => {
+  const oldDeps = moduleDependencies.get(moduleKey);
   if (!oldDeps) return;
-  oldDeps.forEach(importPath => {
-    const importModule = moduleReferences.get(importPath);
+  oldDeps.forEach(importKey => {
+    const importModule = moduleReferences.get(importKey);
 
     if (importModule) {
-      importModule.delete(modulePath);
+      importModule.delete(moduleKey);
 
       if (importModule.size === 0) {
-        moduleReferences.delete(importPath);
+        moduleReferences.delete(importKey);
       }
     }
   });
 
-  moduleDependencies.delete(modulePath);
+  moduleDependencies.delete(moduleKey);
 };
 
 export const setModuleReferences = (modulePath: string, refModule: string) => {
-  modulePath = fixPath(modulePath);
+  const fileKey = getFileKey(modulePath);
 
-  const module = moduleReferences.get(modulePath);
+  const module = moduleReferences.get(fileKey);
 
   if (module) {
     module.add(refModule);
   } else {
-    moduleReferences.set(modulePath, new Set<string>().add(refModule));
+    moduleReferences.set(fileKey, new Set<string>().add(refModule));
   }
 };
 
 export const setModuleDependencies = async (modulePath: string, dependencies: string[]) => {
-  modulePath = fixPath(modulePath);
+  const fileKey = getFileKey(modulePath);
 
-  cleanModuleDependencies(modulePath);
+  cleanModuleDependencies(fileKey);
 
   if (dependencies.length === 0) {
     return;
@@ -50,24 +50,26 @@ export const setModuleDependencies = async (modulePath: string, dependencies: st
   const dependencySet = new Set<string>();
 
   new Set(dependencies).forEach(dep => {
-    const importPath = fixPath(dep);
-    if (modulePath !== importPath) {
-      dependencySet.add(importPath);
+    const importKey = getFileKey(dep);
+    if (fileKey !== importKey) {
+      dependencySet.add(importKey);
 
-      setModuleReferences(importPath, modulePath);
+      setModuleReferences(importKey, fileKey);
     }
   });
 
-  moduleDependencies.set(modulePath, dependencySet);
+  moduleDependencies.set(fileKey, dependencySet);
 };
 
 export const getModuleDependencies = (modulePath: string) => {
-  return moduleDependencies.get(modulePath);
+  const key = getFileKey(modulePath);
+
+  return moduleDependencies.get(key);
 };
 
 export const getModuleReferences = (modulePath: string) => {
-  modulePath = fixPath(modulePath);
-  const modules = moduleReferences.get(modulePath);
+  const fileKey = getFileKey(modulePath);
+  const modules = moduleReferences.get(fileKey);
 
   return modules;
 };
