@@ -2,6 +2,12 @@ import path from 'path';
 import glob from 'fast-glob';
 import { transform } from './utils';
 
+jest.mock('chokidar', () => ({
+  watch: jest.fn(() => ({
+    on: jest.fn(() => {}),
+  })),
+}));
+
 describe('type-generator', () => {
   glob
     .sync('./fixtures/manual-converter/type-schema/**/*.{ts,tsx}', { cwd: __dirname, dot: false })
@@ -57,7 +63,7 @@ describe('type-generator', () => {
         ),
         {},
         {
-          skipParseTypeInFiles: ['lib.dom.iterable.d.ts'],
+          skipParseFiles: ['lib.dom.iterable.d.ts'],
         },
       ),
     ).toMatchSnapshot();

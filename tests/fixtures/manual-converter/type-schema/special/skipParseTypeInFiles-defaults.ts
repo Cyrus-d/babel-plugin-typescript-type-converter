@@ -5,4 +5,4 @@ export interface TestProps {
   b?: AudioParam;
 }
 
-const type = transformTypeToSchema<TestProps>({ skipParseTypeInFiles: ['lib.dom.d.ts'] });
+const type = transformTypeToSchema<TestProps>({ skipParseFiles: ['lib.dom.d.ts'] });

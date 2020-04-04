@@ -14,7 +14,12 @@ export type PropType = t.MemberExpression | t.CallExpression | t.Identifier | t.
 
 export type TsParserConfig = Omit<
   Config,
-  'path' | 'type' | 'skipTypeCheck' | 'includeProps' | 'excludeProps'
+  | 'path'
+  | 'type'
+  | 'skipTypeCheck'
+  | 'includeProps'
+  | 'skipParseRootPropTypes'
+  | 'skipParsePropTypes'
 >;
 
 export interface PluginOptions extends Partial<TsParserConfig> {

@@ -9,7 +9,6 @@ import { addDefault, addNamed } from '@babel/helper-module-imports';
 import syntaxTypeScript from '@babel/plugin-syntax-typescript';
 import { types as t } from '@babel/core';
 import { TSTypeParameterInstantiation } from '@babel/types';
-import { Config } from 'ts-to-json';
 import { generateTypeSchema, generateComponentPropSchema, generateTypeKeys } from './getSchema';
 import addToClass from './addToClass';
 import addToFunctionOrVar from './addToFunctionOrVar';
@@ -17,7 +16,7 @@ import extractTypeProperties from './extractTypeProperties';
 import { TransformerData } from './typings';
 import upsertImport from './upsertImport';
 import { Path, PluginOptions, ConvertState, PropTypeDeclaration } from './types';
-import { updateSourceFileByPath, updateReferences } from './utils';
+import { cleanModuleDependenciesByPath, updateReferences } from './utils';
 
 const BABEL_VERSION = 7;
 const MAX_DEPTH = 3;
@@ -102,13 +101,13 @@ export default declare((api: any, options: PluginOptions, root: string) => {
       Program: {
         enter(programPath: Path<t.Program>, { filename }: any) {
           const state = (this as any).state as ConvertState;
-
+          let usingSchemaTransformer = false;
           state.filePath = filename;
           if (isNotTS(filename)) {
             return;
           }
 
-          updateSourceFileByPath(options as Config, filename);
+          // updateSourceFileByPath(options as Config, filename, root);
 
           // Find existing `react` and `prop-types` imports
           programPath.node.body.forEach(node => {
@@ -189,12 +188,14 @@ export default declare((api: any, options: PluginOptions, root: string) => {
 
                 if (node.callee.name === 'transformComponentPropsToSchema') {
                   if (node.arguments.length > 0 && t.isIdentifier(node.arguments[0])) {
+                    usingSchemaTransformer = true;
                     componentsToGeneratePropSchema.push({ name: node.arguments[0].name, node });
                     path.remove();
                   }
                 }
 
                 if (node.callee.name === 'transformTypeToPropTypes') {
+                  usingSchemaTransformer = true;
                   if (node.arguments.length > 0 && t.isIdentifier(node.arguments[0])) {
                     componentsToPropTypes.push(node.arguments[0].name);
                     path.remove();
@@ -420,9 +421,11 @@ export default declare((api: any, options: PluginOptions, root: string) => {
                 }
 
                 if (t.isIdentifier(init.callee) && init.callee.name === 'transformTypeToSchema') {
+                  usingSchemaTransformer = true;
                   generateTypeSchema(id, path, init, state, options);
                 }
                 if (t.isIdentifier(init.callee) && init.callee.name === 'transformTypeToKeys') {
+                  usingSchemaTransformer = true;
                   generateTypeKeys(id, path, init, state, options);
                 }
               }
@@ -463,6 +466,10 @@ export default declare((api: any, options: PluginOptions, root: string) => {
               );
             }
           });
+
+          if (!usingSchemaTransformer) {
+            cleanModuleDependenciesByPath(filename);
+          }
         },
 
         exit(path: Path<t.Program>, { filename }: any) {
@@ -471,8 +478,10 @@ export default declare((api: any, options: PluginOptions, root: string) => {
           if (isNotTS(filename)) {
             return;
           }
-          // console.log(filename);
           updateReferences(filename);
+          // cleanModuleDependenciesByPath(filename);
+          // console.log(filename);
+          // updateReferences(filename);
           // Remove the `prop-types` import of no components exist,
           // and be sure not to remove pre-existing imports.
           path.get('body').forEach(bodyPath => {

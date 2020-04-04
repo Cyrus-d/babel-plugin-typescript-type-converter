@@ -6,4 +6,4 @@ export interface TestProps {
   b: string;
 }
 
-const type = transformTypeToSchema<TestProps>({ skipParseTypeInFiles: ['lib.dom.d.ts'] });
+const type = transformTypeToSchema<TestProps>({ skipParseFiles: ['lib.dom.d.ts'] });

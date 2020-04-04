@@ -6,5 +6,5 @@ export interface TestProps {
 }
 
 const type = transformTypeToSchema<TestProps>();
-const type2 = transformTypeToSchema<TestProps>({ excludeProps: ['prop_b'] });
+const type2 = transformTypeToSchema<TestProps>({ skipParsePropTypes: ['prop_b'] });
 const type3 = transformTypeToSchema<TestProps>({ includeProps: ['prop_b'] });

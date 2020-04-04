@@ -8,7 +8,7 @@ export function transformTypeToSchema<T>(options?: TransformerOptions<T>) {
   return {} as Definition;
 }
 
-export function transformTypeToPropTypes<T>(component: T) {}
+export function transformTypeToPropTypes<T>(component: T, options?: TransformerOptions<T>) {}
 
 type TypeKeysOptions<T> = Pick<
   TransformerOptions<T>,

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/require-await */
+import path from 'path';
 import { getFileKey } from './getFileKey';
 
 export interface Dependencies {
@@ -26,6 +27,11 @@ const cleanModuleDependencies = (moduleKey: string) => {
   moduleDependencies.delete(moduleKey);
 };
 
+export const cleanModuleDependenciesByPath = (filePath: string) => {
+  const fileKey = getFileKey(filePath);
+  cleanModuleDependencies(fileKey);
+};
+
 export const setModuleReferences = (modulePath: string, refModule: string) => {
   const fileKey = getFileKey(modulePath);
 
@@ -38,7 +44,7 @@ export const setModuleReferences = (modulePath: string, refModule: string) => {
   }
 };
 
-export const setModuleDependencies = async (modulePath: string, dependencies: string[]) => {
+export const setModuleDependencies = (modulePath: string, dependencies: string[]) => {
   const fileKey = getFileKey(modulePath);
 
   cleanModuleDependencies(fileKey);
@@ -52,9 +58,9 @@ export const setModuleDependencies = async (modulePath: string, dependencies: st
   new Set(dependencies).forEach(dep => {
     const importKey = getFileKey(dep);
     if (fileKey !== importKey) {
-      dependencySet.add(importKey);
+      dependencySet.add(path.normalize(dep));
 
-      setModuleReferences(importKey, fileKey);
+      setModuleReferences(importKey, modulePath);
     }
   });
 
@@ -67,8 +73,8 @@ export const getModuleDependencies = (modulePath: string) => {
   return moduleDependencies.get(key);
 };
 
-export const getModuleReferences = (modulePath: string) => {
-  const fileKey = getFileKey(modulePath);
+export const getModuleReferences = (fileName: string) => {
+  const fileKey = getFileKey(fileName);
   const modules = moduleReferences.get(fileKey);
 
   return modules;
@@ -76,4 +82,9 @@ export const getModuleReferences = (modulePath: string) => {
 
 export const getAllModuleReferences = () => {
   return moduleReferences;
+};
+
+export const deleteModuleReference = (fileName: string) => {
+  const fileKey = getFileKey(fileName);
+  moduleReferences.delete(fileKey);
 };
