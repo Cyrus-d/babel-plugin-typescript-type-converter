@@ -6,4 +6,4 @@ export interface TestProps {
 }
 
 const includeProp_b = transformTypeToKeys<TestProps>({ includeProps: ['prop_b'] });
-const excludeProp_b = transformTypeToKeys<TestProps>({ excludeProps: ['prop_b'] });
+const excludeProp_b = transformTypeToKeys<TestProps>({ skipParsePropTypes: ['prop_b'] });

@@ -10,4 +10,4 @@ const FunctionComponent = (props: ComponentProps) => {
   return null;
 };
 
-transformComponentPropsToSchema(FunctionComponent, { excludeProps: ['prop_b'] });
+transformComponentPropsToSchema(FunctionComponent, { skipParsePropTypes: ['prop_b'] });

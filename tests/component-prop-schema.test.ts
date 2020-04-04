@@ -2,6 +2,8 @@ import path from 'path';
 import glob from 'fast-glob';
 import { transform } from './utils';
 
+jest.mock('chokidar', () => ({ watch: jest.fn(() => ({ on: jest.fn(() => {}) })) }));
+
 describe('prop schema generator', () => {
   glob
     .sync('./fixtures/manual-converter/component-prop-schema/**/*.{ts,tsx}', {

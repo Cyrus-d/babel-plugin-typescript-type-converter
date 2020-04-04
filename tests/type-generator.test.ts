@@ -2,11 +2,7 @@ import path from 'path';
 import glob from 'fast-glob';
 import { transform } from './utils';
 
-jest.mock('chokidar', () => ({
-  watch: jest.fn(() => ({
-    on: jest.fn(() => {}),
-  })),
-}));
+jest.mock('chokidar', () => ({ watch: jest.fn(() => ({ on: jest.fn(() => {}) })) }));
 
 describe('type-generator', () => {
   glob

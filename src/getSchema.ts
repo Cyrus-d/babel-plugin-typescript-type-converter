@@ -40,7 +40,7 @@ export const getSchema = (
     ...options,
   };
 
-  updateSourceFileByPath(config, filePath);
+  updateSourceFileByPath(filePath, config);
 
   const program = createProgram(filePath);
 
@@ -54,9 +54,6 @@ export const getSchema = (
   const schema = generator.createSchema(config.type);
 
   setModuleDependencies(filePath, dependencyFiles);
-
-  // console.log(JSON.stringify(schema, null, 2));
-  // console.log((schema as any).definitions.ScrollbarProps);
 
   return schema;
 };
