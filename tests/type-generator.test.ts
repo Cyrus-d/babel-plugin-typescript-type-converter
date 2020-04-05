@@ -50,12 +50,12 @@ describe('type-generator', () => {
     ).toMatchSnapshot();
   });
 
-  it('should merge skipParseTypeInFiles items', () => {
+  it('should merge skipParseFiles items', () => {
     expect(
       transform(
         path.join(
           __dirname,
-          './fixtures/manual-converter/type-schema/special/skipParseTypeInFiles-defaults.ts',
+          './fixtures/manual-converter/type-schema/special/skipParseFiles-defaults.ts',
         ),
         {},
         {

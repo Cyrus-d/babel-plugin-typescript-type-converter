@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`type-generator should merge skipParseTypeInFiles items 1`] = `
+exports[`type-generator should merge skipParseFiles items 1`] = `
 "import { transformTypeToSchema } from '../../../../../src/transformerFunctions';
 export interface TestProps {
   a: HTMLElement;
@@ -64,7 +64,9 @@ const shouldHaveSchema = {
 };"
 `;
 
-exports[`type-generator transforms ./fixtures/manual-converter/type-schema/extended-type-schema.ts 1`] = `
+exports[
+  `type-generator transforms ./fixtures/manual-converter/type-schema/extended-type-schema.ts 1`
+] = `
 "import { ExternalProps } from '../typings';
 import { transformTypeToSchema } from '../../../../src/transformerFunctions';
 export interface TestProps extends ExternalProps {
@@ -92,7 +94,9 @@ const type = {
 };"
 `;
 
-exports[`type-generator transforms ./fixtures/manual-converter/type-schema/interface-schema.ts 1`] = `
+exports[
+  `type-generator transforms ./fixtures/manual-converter/type-schema/interface-schema.ts 1`
+] = `
 "import { transformTypeToSchema } from '../../../../src/transformerFunctions';
 export interface TestProps {
   prop_a: string;
@@ -132,7 +136,9 @@ const type3 = {
 };"
 `;
 
-exports[`type-generator transforms ./fixtures/manual-converter/type-schema/interface-schema-maxDepth.ts 1`] = `
+exports[
+  `type-generator transforms ./fixtures/manual-converter/type-schema/interface-schema-maxDepth.ts 1`
+] = `
 "import { transformTypeToSchema } from '../../../../src/transformerFunctions';
 export interface TestProps {
   level_1: {
@@ -161,7 +167,9 @@ const type4 = {
 };"
 `;
 
-exports[`type-generator transforms ./fixtures/manual-converter/type-schema/mix-type-schema.ts 1`] = `
+exports[
+  `type-generator transforms ./fixtures/manual-converter/type-schema/mix-type-schema.ts 1`
+] = `
 "import { ExternalProps } from '../typings';
 import { transformTypeToSchema } from '../../../../src/transformerFunctions';
 export interface TestProps {
@@ -189,7 +197,9 @@ const type = {
 };"
 `;
 
-exports[`type-generator transforms ./fixtures/manual-converter/type-schema/skipParseTypeInFiles.ts 1`] = `
+exports[
+  `type-generator transforms ./fixtures/manual-converter/type-schema/skipParseTypeInFiles.ts 1`
+] = `
 "import { ExternalProps } from '../typings';
 import { transformTypeToSchema } from '../../../../src/transformerFunctions';
 export interface TestProps {
