@@ -1,5 +1,5 @@
 import path from 'path';
-import { SourceFile } from '../src/utils/SourceFile';
+import { SourceFileCache } from '../src/utils/SourceFileCache';
 import { getFileKey } from '../src/utils/getFileKey';
 import { setModuleDependencies } from '../src/utils/moduleDependencies';
 
@@ -16,7 +16,7 @@ describe('sourceFile', () => {
     getAllSourceFiles,
     getSourceFile,
     createOrUpdateSourceFile,
-  } = new SourceFile();
+  } = new SourceFileCache();
 
   initializeSourceFiles({ expose: 'none', jsDoc: 'none', topRef: true }, filePath);
 
@@ -57,7 +57,7 @@ describe('sourceFile update', () => {
     getSourceFile,
     createOrUpdateSourceFile,
     updateSourceFileByPath,
-  } = new SourceFile();
+  } = new SourceFileCache();
 
   // initial load
   initializeSourceFiles({ expose: 'none', jsDoc: 'none', topRef: true }, refFile);

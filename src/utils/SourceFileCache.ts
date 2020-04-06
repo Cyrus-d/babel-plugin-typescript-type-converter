@@ -19,7 +19,7 @@ let tsconfig: ts.CompilerOptions = {
   target: ts.ScriptTarget.ES5,
 };
 
-class SourceFile {
+class SourceFileCache {
   sourceFilesCache: SourceFileObject | undefined;
 
   initializeSourceFiles = (config: Config, fileName: string) => {
@@ -131,6 +131,6 @@ export const getCompilerOptions = () => {
   return tsconfig;
 };
 
-export const sourceFileInstance = new SourceFile();
+export const sourceFileCacheInstance = new SourceFileCache();
 
-export { SourceFile };
+export { SourceFileCache };

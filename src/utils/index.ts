@@ -4,5 +4,5 @@ export * from './getTransformerOptions';
 export * from './getTypeNames';
 export * from './mergeSchema';
 export * from './moduleDependencies';
-export * from './SourceFile';
+export * from './SourceFileCache';
 export * from './updateReferences';
