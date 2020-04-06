@@ -26,6 +26,11 @@
       "label": "test current file",
       "type": "shell",
       "command": "jest ${fileBasename}"
+    },
+    {
+      "label": "test current file no cache",
+      "type": "shell",
+      "command": "jest ${fileBasename} --no-cache"
     }
   ]
 }

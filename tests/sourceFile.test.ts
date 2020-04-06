@@ -1,10 +1,5 @@
 import path from 'path';
-import {
-  updateSourceFileByPath,
-  getAllSourceFiles,
-  createOrUpdateSourceFile,
-  getSourceFile,
-} from '../src/utils/sourceFile';
+import { SourceFile } from '../src/utils/SourceFile';
 import { getFileKey } from '../src/utils/getFileKey';
 import { setModuleDependencies } from '../src/utils/moduleDependencies';
 
@@ -15,7 +10,15 @@ describe('sourceFile', () => {
     __dirname,
     './fixtures/manual-converter/type-schema/interface-schema.ts',
   );
-  updateSourceFileByPath(filePath, { expose: 'none', jsDoc: 'none', topRef: true });
+
+  const {
+    initializeSourceFiles,
+    getAllSourceFiles,
+    getSourceFile,
+    createOrUpdateSourceFile,
+  } = new SourceFile();
+
+  initializeSourceFiles({ expose: 'none', jsDoc: 'none', topRef: true }, filePath);
 
   it('should initialize sourceFiles', () => {
     const allSourceFiles = getAllSourceFiles();
@@ -41,7 +44,7 @@ describe('sourceFile', () => {
   });
 });
 
-describe('sourceFile dependance', () => {
+describe('sourceFile update', () => {
   const refFile = path.join(__dirname, './fixtures/manual-converter/typings/props.ts');
 
   const fileWithDependencies = path.join(
@@ -49,23 +52,36 @@ describe('sourceFile dependance', () => {
     './fixtures/manual-converter/type-schema/extended-type-schema.ts',
   );
 
+  const {
+    initializeSourceFiles,
+    getSourceFile,
+    createOrUpdateSourceFile,
+    updateSourceFileByPath,
+  } = new SourceFile();
+
   // initial load
-  updateSourceFileByPath(refFile, { expose: 'none', jsDoc: 'none', topRef: true });
+  initializeSourceFiles({ expose: 'none', jsDoc: 'none', topRef: true }, refFile);
   createOrUpdateSourceFile(fileWithDependencies, true);
 
   // map ref to module
   setModuleDependencies(fileWithDependencies, [refFile]);
 
   it('should update referenced files if not in node_modules folder', () => {
-    const src = getSourceFile(getFileKey(refFile), true);
-    updateSourceFileByPath(fileWithDependencies, undefined, true);
-    const src2 = getSourceFile(getFileKey(refFile), true);
-    expect(src === src2).toBeFalsy();
+    const moduleSourceFile = getSourceFile(getFileKey(refFile), true);
+    const refSourceFile = getSourceFile(getFileKey(refFile), true);
+
+    updateSourceFileByPath(fileWithDependencies, true);
+
+    const moduleSourceFileAfter = getSourceFile(getFileKey(refFile), true);
+    const refSourceFileAfter = getSourceFile(getFileKey(refFile), true);
+
+    expect(refSourceFile === refSourceFileAfter).toBeFalsy();
+    expect(moduleSourceFile === moduleSourceFileAfter).toBeFalsy();
   });
 
   it('should update file itself', () => {
     const src = getSourceFile(getFileKey(refFile), true);
-    updateSourceFileByPath(refFile, undefined, true);
+    updateSourceFileByPath(refFile, true);
     const src2 = getSourceFile(getFileKey(refFile), true);
     expect(src === src2).toBeFalsy();
   });

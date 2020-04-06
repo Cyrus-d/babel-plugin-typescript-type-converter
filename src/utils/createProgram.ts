@@ -1,11 +1,11 @@
 import * as ts from 'typescript';
-import { createOrUpdateSourceFile, getCompilerOptions } from './sourceFile';
+import { getCompilerOptions, sourceFileInstance } from './SourceFile';
 
 export const createProgram = (filePath: string) => {
   const tsconfig = getCompilerOptions();
   const program = ts.createProgram([filePath], tsconfig, {
     fileExists(fileName): boolean {
-      const file = createOrUpdateSourceFile(fileName);
+      const file = sourceFileInstance.createOrUpdateSourceFile(fileName);
       if (!file) {
         return false;
       }
@@ -26,10 +26,10 @@ export const createProgram = (filePath: string) => {
       return '\r\n';
     },
     getSourceFile(fileName): ts.SourceFile | undefined {
-      return createOrUpdateSourceFile(fileName);
+      return sourceFileInstance.createOrUpdateSourceFile(fileName);
     },
     readFile(fileName: string): string {
-      const src = createOrUpdateSourceFile(fileName);
+      const src = sourceFileInstance.createOrUpdateSourceFile(fileName);
       if (!src) return '';
 
       return src.text;

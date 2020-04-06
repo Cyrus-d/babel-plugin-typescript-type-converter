@@ -10,7 +10,7 @@ import {
   getTsTypeName,
   createProgram,
   setModuleDependencies,
-  updateSourceFileByPath,
+  sourceFileInstance,
 } from './utils';
 
 import { ConvertState, Path, PluginOptions } from './types';
@@ -40,7 +40,11 @@ export const getSchema = (
     ...options,
   };
 
-  updateSourceFileByPath(filePath, config);
+  if (sourceFileInstance.initialized()) {
+    sourceFileInstance.updateSourceFileByPath(filePath);
+  } else {
+    sourceFileInstance.initializeSourceFiles(config, filePath);
+  }
 
   const program = createProgram(filePath);
 

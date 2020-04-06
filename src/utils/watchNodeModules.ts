@@ -3,7 +3,7 @@ import { watch } from 'chokidar';
 import debounce from 'lodash/debounce';
 // import { deleteModuleReference } from './moduleDependencies';
 import { updateReferences } from './updateReferences';
-import { createOrUpdateSourceFile } from './sourceFile';
+import { sourceFileInstance } from './SourceFile';
 
 const update = (event: string, path: string) => {
   if (event === 'unlink' || event === 'unlinkDir') {
@@ -11,7 +11,7 @@ const update = (event: string, path: string) => {
     // deleteModuleReference(path);
     return;
   }
-  createOrUpdateSourceFile(path, true);
+  sourceFileInstance.createOrUpdateSourceFile(path, true);
   updateReferences(path);
 };
 
