@@ -3123,6 +3123,11 @@ is-number@^7.0.0:
   resolved "https://registry.yarnpkg.com/is-number/-/is-number-7.0.0.tgz#7535345b896734d5f80c4d06c50955527a14f12b"
   integrity sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==
 
+is-plain-obj@^2.0.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/is-plain-obj/-/is-plain-obj-2.1.0.tgz#45e42e37fccf1f40da8e5f76ee21515840c09287"
+  integrity sha512-YWnfyRwxL/+SsrWYfOpUtz5b3YD+nyfkHvjbcanzk8zgyO4ASD67uVMRt8k5bM4lLMDnXfriRhOpemw+NfT1eA==
+
 is-plain-object@^2.0.3, is-plain-object@^2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/is-plain-object/-/is-plain-object-2.0.4.tgz#2c163b3fafb1b606d9d17928f05c2a1c38e07677"
@@ -4898,6 +4903,13 @@ snapdragon@^0.8.1:
     source-map-resolve "^0.5.0"
     use "^3.1.0"
 
+sort-keys@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/sort-keys/-/sort-keys-4.0.0.tgz#56dc5e256637bfe3fec8db0dc57c08b1a2be22d6"
+  integrity sha512-hlJLzrn/VN49uyNkZ8+9b+0q9DjmmYcYOnbMQtpkLrYpPwRApDPZfmqbUfJnAA3sb/nRib+nDot7Zi/1ER1fuA==
+  dependencies:
+    is-plain-obj "^2.0.0"
+
 source-map-resolve@^0.5.0:
   version "0.5.3"
   resolved "https://registry.yarnpkg.com/source-map-resolve/-/source-map-resolve-0.5.3.tgz#190866bece7553e1f8f267a2ee82c606b5509a1a"
@@ -5261,15 +5273,16 @@ tr46@^1.0.1:
   dependencies:
     punycode "^2.1.0"
 
-ts-to-json@^0.64.7:
-  version "0.64.7"
-  resolved "https://registry.yarnpkg.com/ts-to-json/-/ts-to-json-0.64.7.tgz#ae9f7b1079d2a135368dbaf053e2993d3bba8a3f"
-  integrity sha512-MMz713d5YdCHirOQ5rNKLlMMe9JPQ657uoURszoBAxgkcxZUCj4X02m0JgrZHfY49bP+jUbIPNoREFQoAuKl1A==
+ts-to-json@^0.64.8:
+  version "0.64.8"
+  resolved "https://registry.yarnpkg.com/ts-to-json/-/ts-to-json-0.64.8.tgz#b1f46ccd9e2ddbaf1c6666b9ee50fe468acd2c14"
+  integrity sha512-iMlJ8ikQ9qWGNrxyuRrWDD3DQRn7LViWxc421s2fLSVSRubILbXhJhYHJIqqcvSwFVYinNecXoULbJb4RNfoxQ==
   dependencies:
     "@types/json-schema" "^7.0.4"
     commander "~5.0.0"
     glob "~7.1.6"
     json-stable-stringify "^1.0.1"
+    sort-keys "^4.0.0"
     typescript "~3.8.3"
 
 tslib@^1.8.1, tslib@^1.9.0:
