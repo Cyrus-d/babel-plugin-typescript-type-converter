@@ -18,3 +18,5 @@ type TypeKeysOptions<T> = Pick<
 export function transformTypeToKeys<T>(options?: TypeKeysOptions<T>) {
   return ([] as unknown) as keyof T;
 }
+
+export { Definition };
