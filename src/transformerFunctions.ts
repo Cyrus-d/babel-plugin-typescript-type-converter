@@ -1,4 +1,4 @@
-import { Definition } from 'ts-to-json';
+import { Definition, JSONSchemaDefinition } from 'ts-to-json';
 import { TransformerOptions } from './typings';
 
 export function transformComponentPropsToSchema<T>(component: T, options?: TransformerOptions<T>) {}
@@ -19,4 +19,4 @@ export function transformTypeToKeys<T>(options?: TypeKeysOptions<T>) {
   return ([] as unknown) as keyof T;
 }
 
-export { Definition };
+export { Definition, JSONSchemaDefinition };
