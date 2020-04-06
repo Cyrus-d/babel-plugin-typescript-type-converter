@@ -1,6 +1,6 @@
 {
   "name": "typescript-type-transformer",
-  "version": "1.5.7",
+  "version": "1.5.8",
   "description": "Transform types to json schema, propTypes and keys.",
   "repository": "https://github.com/Cyrus-d/typescript-type-transformer",
   "license": "MIT",
@@ -25,7 +25,7 @@
   },
   "peerDependencies": {
     "@babel/core": "^7.0.0",
-    "ts-to-json": "^0.64.6",
+    "ts-to-json": "^0.64.7",
     "typescript": "^3.8.3"
   },
   "dependencies": {
@@ -70,7 +70,7 @@
     "fast-glob": "^3.2.2",
     "jest": "^25.2.4",
     "prop-types": "^15.7.2",
-    "ts-to-json": "^0.64.6",
+    "ts-to-json": "^0.64.7",
     "typescript": "^3.8.3"
   }
 }
