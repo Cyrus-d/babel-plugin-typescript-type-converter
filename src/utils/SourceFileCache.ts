@@ -29,13 +29,13 @@ class SourceFileCache {
     const program = createProgram(config);
     this.sourceFilesCache = program.getSourceFiles().reduce((obj, sourceFile) => {
       const fileKey = getFileKey(sourceFile.fileName);
-      obj[fileKey] = sourceFile;
+      obj[fileKey] = sourceFile as any;
       watchNodeModules(sourceFile.fileName);
 
       return obj;
     }, {} as SourceFileObject);
 
-    tsconfig = program.getCompilerOptions();
+    tsconfig = program.getCompilerOptions() as any;
   };
 
   initialized = () => this.sourceFilesCache !== undefined;
@@ -49,7 +49,7 @@ class SourceFileCache {
     }
 
     // if no absolute path and only file name like lib.dom.iterable.d.ts
-    const file = Object.keys(sourceFilesCache).find(x => x.endsWith(fileKey));
+    const file = Object.keys(sourceFilesCache).find((x) => x.endsWith(fileKey));
 
     if (file) {
       // for performance changing key, so next time no need to search
@@ -115,7 +115,7 @@ class SourceFileCache {
     const deps = getModuleDependencies(filePath);
 
     if (deps) {
-      deps.forEach(d => {
+      deps.forEach((d) => {
         if (!d.includes('node_modules') && path.isAbsolute(d)) {
           this.createOrUpdateSourceFile(d, true, forceUpdate);
         }

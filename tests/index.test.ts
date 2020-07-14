@@ -4,7 +4,7 @@ import { transform } from './utils';
 import plugin from '../src';
 
 describe('babel-plugin-typescript-to-proptypes', () => {
-  glob.sync('./fixtures/**/*.{ts,tsx}', { cwd: __dirname, dot: false }).forEach(basePath => {
+  glob.sync('./fixtures/**/*.{ts,tsx}', { cwd: __dirname, dot: false }).forEach((basePath) => {
     const filePath = String(basePath);
 
     if (filePath.includes('/special/') || filePath.includes('/manual-converter/')) {
@@ -18,26 +18,6 @@ describe('babel-plugin-typescript-to-proptypes', () => {
     it(`transforms ${filePath}`, () => {
       expect(transform(path.join(__dirname, filePath))).toMatchSnapshot();
     });
-  });
-
-  it('works correctly when transpiling down to ES3', () => {
-    expect(
-      transform(path.join(__dirname, './fixtures/special/es-target.ts'), {
-        presets: ['@babel/preset-typescript', ['@babel/preset-env', { targets: { ie: '8' } }]],
-        plugins: [plugin, '@babel/plugin-proposal-class-properties'],
-      }),
-    ).toMatchSnapshot();
-
-    // loose
-    expect(
-      transform(path.join(__dirname, './fixtures/special/es-target.ts'), {
-        presets: [
-          '@babel/preset-typescript',
-          ['@babel/preset-env', { targets: { ie: '8' }, loose: true }],
-        ],
-        plugins: [plugin, '@babel/plugin-proposal-class-properties'],
-      }),
-    ).toMatchSnapshot();
   });
 
   it('works correctly when transpiling down to ES5', () => {

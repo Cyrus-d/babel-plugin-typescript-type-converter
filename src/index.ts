@@ -110,7 +110,7 @@ export default declare((api: any, options: PluginOptions, root: string) => {
           // updateSourceFileByPath(options as Config, filename, root);
 
           // Find existing `react` and `prop-types` imports
-          programPath.node.body.forEach(node => {
+          programPath.node.body.forEach((node) => {
             if (!t.isImportDeclaration(node)) {
               return;
             }
@@ -248,7 +248,7 @@ export default declare((api: any, options: PluginOptions, root: string) => {
                 isComponentName(node.id.name) &&
                 isPropsParam(node.params[0]) &&
                 t.isTSTypeAnnotation(node.params[0].typeAnnotation) &&
-                isPropsType(node.params[0].typeAnnotation.typeAnnotation)
+                isPropsType((node.params[0].typeAnnotation as any).typeAnnotation)
               ) {
                 transformerData.push({
                   name: node.id.name,
@@ -283,7 +283,7 @@ export default declare((api: any, options: PluginOptions, root: string) => {
             TSEnumDeclaration({ node }: Path<t.TSEnumDeclaration>) {
               state.referenceTypes[node.id.name] = node;
 
-              node.members.forEach(member => {
+              node.members.forEach((member) => {
                 state.referenceTypes[
                   `${node.id.name}.${(member.id as t.Identifier).name}`
                 ] = member;
@@ -327,7 +327,7 @@ export default declare((api: any, options: PluginOptions, root: string) => {
 
               // const Foo: React.FC<Props> = () => {};
               if (id.typeAnnotation && id.typeAnnotation.typeAnnotation) {
-                const type = id.typeAnnotation.typeAnnotation;
+                const type = id.typeAnnotation.typeAnnotation as any;
 
                 if (
                   t.isTSTypeReference(type) &&
@@ -339,12 +339,12 @@ export default declare((api: any, options: PluginOptions, root: string) => {
                     t.isIdentifier(type.typeName.left, {
                       name: state.reactImportedName,
                     }) &&
-                    REACT_FC_NAMES.some(name =>
+                    REACT_FC_NAMES.some((name) =>
                       t.isIdentifier((type.typeName as any).right, { name }),
                     )) ||
                     // FC, FunctionComponent
                     (!!state.reactImportedName &&
-                      REACT_FC_NAMES.some(name => t.isIdentifier(type.typeName, { name }))))
+                      REACT_FC_NAMES.some((name) => t.isIdentifier(type.typeName, { name }))))
                 ) {
                   props = type.typeParameters.params[0];
                 }
@@ -360,9 +360,9 @@ export default declare((api: any, options: PluginOptions, root: string) => {
                   isComponentName(id.name) &&
                   isPropsParam(decl.init.params[0]) &&
                   t.isTSTypeAnnotation(decl.init.params[0].typeAnnotation) &&
-                  isPropsType(decl.init.params[0].typeAnnotation.typeAnnotation)
+                  isPropsType((decl.init.params[0].typeAnnotation as any).typeAnnotation)
                 ) {
-                  props = decl.init.params[0].typeAnnotation.typeAnnotation;
+                  props = (decl.init.params[0].typeAnnotation as any).typeAnnotation;
                 }
 
                 // const Ref = React.forwardRef();
@@ -392,10 +392,12 @@ export default declare((api: any, options: PluginOptions, root: string) => {
                       t.isArrowFunctionExpression(init.arguments[0]) &&
                       init.arguments[0].params.length > 0 &&
                       isPropsParam(init.arguments[0].params[0]) &&
-                      t.isTSTypeAnnotation(init.arguments[0].params[0].typeAnnotation) &&
-                      isPropsType(init.arguments[0].params[0].typeAnnotation.typeAnnotation)
+                      t.isTSTypeAnnotation(init.arguments[0].params[0].typeAnnotation as any) &&
+                      isPropsType(
+                        (init.arguments[0].params[0].typeAnnotation as any).typeAnnotation,
+                      )
                     ) {
-                      props = init.arguments[0].params[0].typeAnnotation.typeAnnotation;
+                      props = (init.arguments[0].params[0].typeAnnotation as any).typeAnnotation;
                     }
                   } else if (init.callee.property.name === 'memo') {
                     // const Ref = React.memo<Props>();
@@ -412,10 +414,12 @@ export default declare((api: any, options: PluginOptions, root: string) => {
                       t.isArrowFunctionExpression(init.arguments[0]) &&
                       init.arguments[0].params.length > 0 &&
                       isPropsParam(init.arguments[0].params[0]) &&
-                      t.isTSTypeAnnotation(init.arguments[0].params[0].typeAnnotation) &&
-                      isPropsType(init.arguments[0].params[0].typeAnnotation.typeAnnotation)
+                      t.isTSTypeAnnotation(init.arguments[0].params[0].typeAnnotation as any) &&
+                      isPropsType(
+                        (init.arguments[0].params[0].typeAnnotation as any).typeAnnotation,
+                      )
                     ) {
-                      props = init.arguments[0].params[0].typeAnnotation.typeAnnotation;
+                      props = (init.arguments[0].params[0].typeAnnotation as any).typeAnnotation;
                     }
                   }
                 }
@@ -442,7 +446,7 @@ export default declare((api: any, options: PluginOptions, root: string) => {
           });
 
           // After we have extracted all our information, run all transformers
-          transformerData.forEach(data => {
+          transformerData.forEach((data) => {
             const { path, name, state, propsType } = data;
             if (
               (!options.isProduction || options.transformReactPropTypesInProduction) &&
@@ -454,7 +458,7 @@ export default declare((api: any, options: PluginOptions, root: string) => {
                 addToFunctionOrVar(path as Path<t.FunctionDeclaration>, name, propsType!, state);
               }
             }
-            const generatorInfo = componentsToGeneratePropSchema.find(x => x.name === name);
+            const generatorInfo = componentsToGeneratePropSchema.find((x) => x.name === name);
             if (generatorInfo) {
               generateComponentPropSchema(
                 name,
@@ -484,7 +488,7 @@ export default declare((api: any, options: PluginOptions, root: string) => {
           // updateReferences(filename);
           // Remove the `prop-types` import of no components exist,
           // and be sure not to remove pre-existing imports.
-          path.get('body').forEach(bodyPath => {
+          path.get('body').forEach((bodyPath) => {
             if (
               state.propTypes.count === 0 &&
               t.isImportDeclaration(bodyPath.node) &&
