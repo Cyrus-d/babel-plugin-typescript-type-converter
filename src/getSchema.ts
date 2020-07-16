@@ -22,6 +22,8 @@ export const getSchema = (
 ): tsJson.Definition | undefined => {
   const dependencyFiles: string[] = [];
 
+  const { shouldParseNode, ...rest } = options;
+
   const config: tsJson.Config = {
     expose: 'none',
     handleUnknownTypes: true,
@@ -30,13 +32,14 @@ export const getSchema = (
     shouldParseNode: (node: any) => {
       const path = node.getSourceFile().fileName;
       dependencyFiles.push(path);
+      if (shouldParseNode) shouldParseNode(node);
 
       return true;
     },
     skipTypeCheck: true,
     topRef: true,
     type: propName,
-    ...options,
+    ...rest,
   };
 
   if (sourceFileCacheInstance.initialized()) {
