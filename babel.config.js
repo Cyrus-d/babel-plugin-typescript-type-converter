@@ -5,7 +5,7 @@ module.exports = {
     [
       '@babel/plugin-proposal-class-properties',
       {
-        loose: false,
+        loose: true,
       },
     ],
     '@babel/plugin-proposal-export-default-from',

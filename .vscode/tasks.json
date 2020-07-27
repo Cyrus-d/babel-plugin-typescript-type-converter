@@ -6,7 +6,9 @@
       "type": "typescript",
       "tsconfig": "tsconfig.json",
       "option": "watch",
-      "problemMatcher": ["$tsc-watch"],
+      "problemMatcher": [
+        "$tsc-watch"
+      ],
       "presentation": {
         "group": "watch",
         "panel": "shared"
@@ -25,7 +27,8 @@
     {
       "label": "test current file",
       "type": "shell",
-      "command": "jest ${fileBasename}"
+      "command": "jest ${fileBasename}",
+      "problemMatcher": []
     },
     {
       "label": "test current file no cache",

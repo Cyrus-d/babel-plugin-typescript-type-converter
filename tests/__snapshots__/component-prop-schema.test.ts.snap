@@ -551,7 +551,7 @@ export interface ComponentProps {
   prop_a: string;
   prop_b?: boolean;
 }
-type OwnProps = ComponentProps & ExternalProps;
+export type OwnProps = ComponentProps & ExternalProps;
 
 const FunctionComponent = (props: OwnProps) => {
   return null;

@@ -6,13 +6,13 @@ export interface ComponentProps {
   prop_a: string;
   prop_b?: boolean;
 }
-type OwnProps = ComponentProps & ExternalProps;
+export type OwnProps = ComponentProps & ExternalProps;
 
 const FunctionComponent = (props: OwnProps) => {
   return null;
 };
 
-const SFCComponent: SFC<OwnProps> = props => {
+const SFCComponent: SFC<OwnProps> = (props) => {
   return null;
 };
 
@@ -22,7 +22,7 @@ class ClassComponent extends Component<OwnProps> {
   }
 }
 
-const MemoComponent: SFC<OwnProps> = memo(props => {
+const MemoComponent: SFC<OwnProps> = memo((props) => {
   return null;
 });
 
