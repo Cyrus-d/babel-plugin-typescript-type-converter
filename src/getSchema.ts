@@ -25,6 +25,7 @@ export const getSchema = (
   const { shouldParseNode, ...rest } = options;
 
   const config: tsJson.Config = {
+    allowArbitraryDataTypes: true,
     expose: 'none',
     handleUnknownTypes: true,
     jsDoc: 'none',

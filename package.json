@@ -1,6 +1,6 @@
 {
   "name": "typescript-type-transformer",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "Transform types to json schema, propTypes and keys.",
   "repository": "https://github.com/Cyrus-d/typescript-type-transformer",
   "license": "MIT",
@@ -36,7 +36,7 @@
     "chokidar": "^3.3.1",
     "deepmerge": "^4.2.2",
     "lodash": "^4.17.15",
-    "ts-to-json": "^0.65.4"
+    "ts-to-json": "^0.66.1"
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",
