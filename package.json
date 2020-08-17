@@ -1,6 +1,6 @@
 {
   "name": "typescript-type-transformer",
-  "version": "1.6.3",
+  "version": "1.6.4",
   "description": "Transform types to json schema, propTypes and keys.",
   "repository": "https://github.com/Cyrus-d/typescript-type-transformer",
   "license": "MIT",
