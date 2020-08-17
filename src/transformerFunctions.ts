@@ -16,7 +16,7 @@ type TypeKeysOptions<T> = Pick<
 >;
 
 export function transformTypeToKeys<T>(options?: TypeKeysOptions<T>) {
-  return ([] as unknown) as keyof T;
+  return [] as string[];
 }
 
 export { Definition, JSONSchemaDefinition };
