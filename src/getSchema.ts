@@ -10,6 +10,7 @@ import {
   createProgram,
   setModuleDependencies,
   sourceFileCacheInstance,
+  shouldTransform,
 } from './utils';
 
 import { ConvertState, Path, PluginOptions } from './types';
@@ -100,7 +101,10 @@ export const generateTypeKeys = (
   const typeNames = getNodeTypesNames(node);
   const options = getTransformerOptions(node);
 
-  if (options?.transformInProduction === false && pluginOptions.isProduction) {
+  if (
+    !shouldTransform(pluginOptions.disableGenerateTypeKeysInEnv) ||
+    !shouldTransform(options.disableTransformInEnv)
+  ) {
     setNullValue(path, id);
 
     return;
@@ -129,7 +133,10 @@ export const generateTypeSchema = (
   const typeNames = getNodeTypesNames(node);
   const options = getTransformerOptions(node);
 
-  if (options?.transformInProduction === false && pluginOptions.isProduction) {
+  if (
+    !shouldTransform(pluginOptions.disableGenerateTypeSchemaInEnv) ||
+    !shouldTransform(options.disableTransformInEnv)
+  ) {
     setNullValue(path, id);
 
     return;
@@ -156,9 +163,8 @@ export function generateComponentPropSchema<
   const options = getTransformerOptions(generatorNode);
 
   if (
-    !pluginOptions.isProduction ||
-    pluginOptions.transformReactPropSchemaInProduction ||
-    options?.transformInProduction
+    shouldTransform(pluginOptions.disableGenerateReactPropSchemaInEnv) &&
+    shouldTransform(options.disableTransformInEnv)
   ) {
     const typeNames = getTsTypeName(propTypes as t.TSIntersectionType);
     const schema = getSchemaObject(generatorNode, state, typeNames, options);

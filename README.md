@@ -1,8 +1,4 @@
-# babel-plugin-transform-typescript-type
-
-[![Build Status](https://github.com/milesj/babel-plugin-transform-typescript-type/workflows/Build/badge.svg)](https://github.com/milesj/babel-plugin-transform-typescript-type/actions?query=branch%3Amaster)
-[![npm version](https://badge.fury.io/js/babel-plugin-transform-typescript-type.svg)](https://www.npmjs.com/package/babel-plugin-transform-typescript-type)
-[![npm deps](https://david-dm.org/milesj/babel-plugin-transform-typescript-type.svg)](https://www.npmjs.com/package/babel-plugin-transform-typescript-type)
+# typescript-type-transformer
 
 A Babel plugin to generate React PropTypes from TypeScript interfaces or type aliases.
 
@@ -81,13 +77,13 @@ type Props = {
   name?: string;
 };
 
-const Example: React.FC<Props> = props => <div />;
+const Example: React.FC<Props> = (props) => <div />;
 
 // After
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Example = props => <div />;
+const Example = (props) => <div />;
 
 Example.propTypes = {
   name: PropTypes.string,
@@ -102,9 +98,9 @@ Example.propTypes = {
 ## Installation
 
 ```tsx
-yarn add --dev babel-plugin-transform-typescript-type
+yarn add --dev typescript-type-transformer
 // Or
-npm install --save-dev babel-plugin-transform-typescript-type
+npm install --save-dev typescript-type-transformer
 ```
 
 ## Usage
@@ -117,7 +113,7 @@ when building a library. Requires either the `@babel/plugin-syntax-jsx` plugin o
 // babel.config.js
 const plugins = [
   [
-    'babel-plugin-transform-typescript-type',
+    'typescript-type-transformer',
      isProduction: process.env.NODE_ENV === 'production',
   ]
 ];
@@ -155,7 +151,7 @@ be enabled in your Babel config. Defaults to `false`.
 
 ```tsx
 module.exports = {
-  plugins: [['babel-plugin-transform-typescript-type', { comments: true }]],
+  plugins: [['typescript-type-transformer', { comments: true }]],
 };
 ```
 
@@ -198,7 +194,7 @@ Defaults to `[]`.
 
 ```tsx
 module.exports = {
-  plugins: [['babel-plugin-transform-typescript-type', { customPropTypeSuffixes: ['Shape'] }]],
+  plugins: [['typescript-type-transformer', { customPropTypeSuffixes: ['Shape'] }]],
 };
 ```
 
@@ -240,7 +236,7 @@ any unknown and unspecified prop. Defaults to `false`.
 
 ```tsx
 module.exports = {
-  plugins: [['babel-plugin-transform-typescript-type', { forbidExtraProps: true }]],
+  plugins: [['typescript-type-transformer', { forbidExtraProps: true }]],
 };
 ```
 
@@ -281,7 +277,7 @@ Automatically include a `children` prop type to mimic the implicit nature of Typ
 
 ```tsx
 module.exports = {
-  plugins: [['babel-plugin-transform-typescript-type', { implicitChildren: true }]],
+  plugins: [['typescript-type-transformer', { implicitChildren: true }]],
 };
 ```
 
@@ -321,7 +317,7 @@ Maximum depth to convert while handling recursive or deeply nested shapes. Defau
 
 ```tsx
 module.exports = {
-  plugins: [['babel-plugin-transform-typescript-type', { maxDepth: 3 }]],
+  plugins: [['typescript-type-transformer', { maxDepth: 3 }]],
 };
 ```
 
@@ -376,7 +372,7 @@ max.
 
 ```tsx
 module.exports = {
-  plugins: [['babel-plugin-transform-typescript-type', { maxSize: 2 }]],
+  plugins: [['typescript-type-transformer', { maxSize: 2 }]],
 };
 ```
 
@@ -426,7 +422,7 @@ if you want to accept nulls and non-required for all prop types. Defaults to `tr
 
 ```tsx
 module.exports = {
-  plugins: [['babel-plugin-transform-typescript-type', { strict: true }]],
+  plugins: [['typescript-type-transformer', { strict: true }]],
 };
 ```
 
@@ -471,7 +467,7 @@ customized by passing a string. Defaults to `false`.
 
 ```tsx
 module.exports = {
-  plugins: [['babel-plugin-transform-typescript-type', { typeCheck: true }]],
+  plugins: [['typescript-type-transformer', { typeCheck: true }]],
 };
 ```
 
@@ -517,23 +513,20 @@ Following functions are available to convert types to schema.
 - transformTypeToPropTypes
 - transformTypeToKeys
 
-## transformComponentPropsToSchema
-
-### plugin options:
-
-- generateReactPropsSchemaInProduction (default:false)
-
 ### Function Options
 
 - excludeProps?: string[];
+- excludeRootProps: ?: string[];
 - includeProps?: string[];
 - maxDepth?: number;
-- transformInProduction?: boolean;
+- disableTransformInEnv?: string[];
+
+## transformComponentPropsToSchema
 
 ### Usage:
 
 ```
-import { transformComponentPropsToSchema } from 'babel-plugin-transform-typescript-type';
+import { transformComponentPropsToSchema } from 'typescript-type-transformer';
 
 export interface ComponentProps {
   prop_a: string;
@@ -568,17 +561,10 @@ FunctionComponent.__propSchema = {
 
 ## transformTypeToSchema
 
-### Function Options
-
-- excludeProps?: string[];
-- includeProps?: string[];
-- maxDepth?: number;
-- transformInProduction?: boolean;
-
 ### Usage:
 
 ```
-import { transformTypeToSchema } from 'babel-plugin-transform-typescript-type';
+import { transformTypeToSchema } from 'typescript-type-transformer';
 
 export interface TestProps {
   prop_a: string;
@@ -608,14 +594,10 @@ const type = {
 
 ## transformTypeToPropTypes
 
-### plugin options:
-
-- generateReactPropTypesManually (default:false)
-
 ### Usage:
 
 ```
-import { transformTypeToPropTypes } from 'babel-plugin-transform-typescript-type';
+import { transformTypeToPropTypes } from 'typescript-type-transformer';
 
 export interface ComponentProps {
   prop_a: string;
@@ -643,7 +625,7 @@ FunctionComponent.propTypes = {
 ### Usage:
 
 ```
-import { transformTypeToKeys } from 'babel-plugin-transform-typescript-type';
+import { transformTypeToKeys } from 'typescript-type-transformer';
 
 export interface TestProps {
   prop_a: string;
@@ -658,3 +640,11 @@ Result:
 ```
 const type = ['prop_a', 'prop_b'];"
 ```
+
+## Global options
+
+- generateReactPropTypesManually?: boolean;
+- disableGenerateReactPropTypesInEnv?: string[];
+- disableGenerateReactPropSchemaInEnv?: string[];
+- disableGenerateTypeSchemaInEnv?: string[];
+- disableGenerateTypeKeysInEnv?: string[];

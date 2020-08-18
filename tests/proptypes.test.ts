@@ -2,25 +2,25 @@ import path from 'path';
 import { transform } from './utils';
 
 describe('prop types', () => {
-  it('should transforms when is not in production', () => {
+  it('should transforms', () => {
     expect(
       transform(
         path.join(__dirname, './fixtures/manual-converter/prop-types/component-prop-schema.ts'),
         {},
         {
-          isProduction: false,
+          // isProduction: false,
         },
       ),
     ).toMatchSnapshot();
   });
 
-  it('should not transforms when is in Production', () => {
+  it('should not transforms when disabled', () => {
     expect(
       transform(
         path.join(__dirname, './fixtures/manual-converter/prop-types/component-prop-schema.ts'),
         {},
         {
-          isProduction: true,
+          disableGenerateReactPropTypesInEnv: ['test'],
         },
       ),
     ).toMatchSnapshot();
@@ -32,20 +32,7 @@ describe('prop types', () => {
         path.join(__dirname, './fixtures/manual-converter/prop-types/component-prop-schema.ts'),
         {},
         {
-          transformReactPropTypesManually: true,
-        },
-      ),
-    ).toMatchSnapshot();
-  });
-
-  it('should transforms when transformReactPropTypesInProduction=true', () => {
-    expect(
-      transform(
-        path.join(__dirname, './fixtures/manual-converter/prop-types/component-prop-schema.ts'),
-        {},
-        {
-          transformReactPropTypesInProduction: true,
-          isProduction: true,
+          generateReactPropTypesManually: true,
         },
       ),
     ).toMatchSnapshot();
@@ -60,7 +47,7 @@ describe('prop types', () => {
         ),
         {},
         {
-          transformReactPropTypesManually: true,
+          generateReactPropTypesManually: true,
         },
       ),
     ).toMatchSnapshot();

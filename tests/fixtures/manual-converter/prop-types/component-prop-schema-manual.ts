@@ -9,4 +9,5 @@ export interface ComponentProps {
 const FunctionComponent = (props: ComponentProps) => {
   return null;
 };
+
 transformTypeToPropTypes(FunctionComponent);

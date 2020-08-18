@@ -16,7 +16,7 @@ import extractTypeProperties from './extractTypeProperties';
 import { TransformerData } from './typings';
 import upsertImport from './upsertImport';
 import { Path, PluginOptions, ConvertState, PropTypeDeclaration } from './types';
-import { cleanModuleDependenciesByPath, updateReferences } from './utils';
+import { cleanModuleDependenciesByPath, updateReferences, shouldTransform } from './utils';
 
 const BABEL_VERSION = 7;
 const MAX_DEPTH = 3;
@@ -46,11 +46,6 @@ function isPropsType(param: t.Node): param is PropTypeDeclaration {
 
 export default declare((api: any, options: PluginOptions, root: string) => {
   api.assertVersion(BABEL_VERSION);
-
-  if (options.isProduction === undefined)
-    throw new Error(
-      'The "isProduction" option must have a value of true or false. (babel-plugin-transform-typescript-type)',
-    );
 
   return {
     inherits: syntaxTypeScript,
@@ -449,8 +444,8 @@ export default declare((api: any, options: PluginOptions, root: string) => {
           transformerData.forEach((data) => {
             const { path, name, state, propsType } = data;
             if (
-              (!options.isProduction || options.transformReactPropTypesInProduction) &&
-              (!options.transformReactPropTypesManually || componentsToPropTypes.includes(name))
+              shouldTransform(options.disableGenerateReactPropTypesInEnv) &&
+              (!options.generateReactPropTypesManually || componentsToPropTypes.includes(name))
             ) {
               if (t.isClassDeclaration(path.node) || t.isClassExpression(path.node)) {
                 addToClass(path.node, state);

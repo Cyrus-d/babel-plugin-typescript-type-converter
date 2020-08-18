@@ -10,4 +10,4 @@ const FunctionComponent = (props: ComponentProps) => {
   return null;
 };
 
-transformComponentPropsToSchema(FunctionComponent, { transformInProduction: true });
+transformComponentPropsToSchema(FunctionComponent, { disableTransformInEnv: ['test'] });

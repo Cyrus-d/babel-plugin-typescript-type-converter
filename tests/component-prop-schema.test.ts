@@ -10,7 +10,7 @@ describe('prop schema generator', () => {
       cwd: __dirname,
       dot: false,
     })
-    .forEach(basePath => {
+    .forEach((basePath) => {
       const filePath = String(basePath);
 
       if (filePath.includes('/special/') || filePath.includes('/typings/')) {
@@ -18,38 +18,34 @@ describe('prop schema generator', () => {
       }
       it(`transforms ${filePath}`, () => {
         expect(
-          transform(path.join(__dirname, filePath), {}, { transformReactPropTypesManually: true }),
+          transform(path.join(__dirname, filePath), {}, { generateReactPropTypesManually: true }),
         ).toMatchSnapshot();
       });
     });
 
-  it('should generate prop schema in production', () => {
+  it('should not generate prop schema if disabled by function', () => {
     expect(
       transform(
         path.join(
           __dirname,
-          './fixtures/manual-converter/component-prop-schema/special/component-prop-schema-production.ts',
+          './fixtures/manual-converter/component-prop-schema/special/component-prop-schema.ts',
         ),
         {},
-        {
-          isProduction: true,
-        },
       ),
     ).toMatchSnapshot();
   });
 
-  it('should always generate prop schema in production', () => {
+  it('should not generate prop schema if disabled', () => {
     expect(
       transform(
         path.join(
           __dirname,
-          './fixtures/manual-converter/component-prop-schema/special/component-prop-schema-production-global.ts',
+          './fixtures/manual-converter/component-prop-schema/special/component-prop-schema-global.ts',
         ),
         {},
         {
-          isProduction: true,
-          transformReactPropTypesManually: true,
-          transformReactPropSchemaInProduction: true,
+          generateReactPropTypesManually: true,
+          disableGenerateReactPropSchemaInEnv: ['test'],
         },
       ),
     ).toMatchSnapshot();

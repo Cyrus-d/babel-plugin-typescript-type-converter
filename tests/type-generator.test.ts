@@ -7,7 +7,7 @@ jest.mock('chokidar', () => ({ watch: jest.fn(() => ({ on: jest.fn(() => {}) }))
 describe('type-generator', () => {
   glob
     .sync('./fixtures/manual-converter/type-schema/**/*.{ts,tsx}', { cwd: __dirname, dot: false })
-    .forEach(basePath => {
+    .forEach((basePath) => {
       const filePath = String(basePath);
 
       if (filePath.includes('/special/')) {
@@ -15,21 +15,32 @@ describe('type-generator', () => {
       }
       it(`transforms ${filePath}`, () => {
         expect(
-          transform(path.join(__dirname, filePath), {}, { transformReactPropTypesManually: true }),
+          transform(path.join(__dirname, filePath), {}, { generateReactPropTypesManually: true }),
         ).toMatchSnapshot();
       });
     });
 
-  it('should not transforms in production when disabled', () => {
+  it('should not transforms when disabled by function', () => {
     expect(
       transform(
         path.join(
           __dirname,
-          './fixtures/manual-converter/type-schema/special/production-schema.ts',
+          './fixtures/manual-converter/type-schema/special/schema-function-disable.ts',
+        ),
+      ),
+    ).toMatchSnapshot();
+  });
+
+  it('should not transforms when disabled globally', () => {
+    expect(
+      transform(
+        path.join(
+          __dirname,
+          './fixtures/manual-converter/type-schema/special/skipParseFiles-defaults.ts',
         ),
         {},
         {
-          isProduction: true,
+          disableGenerateTypeSchemaInEnv: ['test'],
         },
       ),
     ).toMatchSnapshot();

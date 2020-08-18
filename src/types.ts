@@ -26,13 +26,13 @@ export interface PluginOptions extends Partial<TsParserConfig> {
   maxSize?: number;
   strict?: boolean;
   typeCheck?: boolean | string;
-  /*
-  must provide this option to determinate what process need to be continue in production environment
-  */
-  isProduction?: boolean;
-  transformReactPropTypesInProduction?: boolean;
-  transformReactPropTypesManually?: boolean;
-  transformReactPropSchemaInProduction?: boolean;
+
+  generateReactPropTypesManually?: boolean;
+
+  disableGenerateReactPropTypesInEnv?: string[];
+  disableGenerateReactPropSchemaInEnv?: string[];
+  disableGenerateTypeSchemaInEnv?: string[];
+  disableGenerateTypeKeysInEnv?: string[];
 }
 
 export interface ConvertState {

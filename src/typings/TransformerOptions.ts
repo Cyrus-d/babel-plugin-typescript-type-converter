@@ -6,5 +6,5 @@ export interface TransformerOptions<T> extends Partial<TsParserConfig> {
   excludeRootProps?: (keyof GetComponentProps<T>)[];
   includeProps?: (keyof GetComponentProps<T>)[];
   maxDepth?: number;
-  transformInProduction?: boolean;
+  disableTransformInEnv?: string[];
 }

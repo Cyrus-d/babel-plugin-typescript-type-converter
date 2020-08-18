@@ -42,31 +42,25 @@ const type = {
 };"
 `;
 
-exports[`type-generator should not transforms in production when disabled 1`] = `
+exports[`type-generator should not transforms when disabled by function 1`] = `
 "import { transformTypeToSchema } from '../../../../../src/transformerFunctions';
 export interface TestProps {
   prop_a: string;
   prop_b?: string;
 }
-const shouldBeNullValue = null;
-const shouldHaveSchema = {
-  'type': 'object',
-  'properties': {
-    'prop_a': {
-      'type': 'string'
-    },
-    'prop_b': {
-      'type': 'string'
-    }
-  },
-  'required': ['prop_a'],
-  'additionalProperties': false
-};"
+const shouldBeNullValue = null;"
 `;
 
-exports[
-  `type-generator transforms ./fixtures/manual-converter/type-schema/extended-type-schema.ts 1`
-] = `
+exports[`type-generator should not transforms when disabled globally 1`] = `
+"import { transformTypeToSchema } from '../../../../../src/transformerFunctions';
+export interface TestProps {
+  a: HTMLElement;
+  b?: AudioParam;
+}
+const type = null;"
+`;
+
+exports[`type-generator transforms ./fixtures/manual-converter/type-schema/extended-type-schema.ts 1`] = `
 "import { ExternalProps } from '../typings';
 import { transformTypeToSchema } from '../../../../src/transformerFunctions';
 export interface TestProps extends ExternalProps {
@@ -94,9 +88,7 @@ const type = {
 };"
 `;
 
-exports[
-  `type-generator transforms ./fixtures/manual-converter/type-schema/interface-schema.ts 1`
-] = `
+exports[`type-generator transforms ./fixtures/manual-converter/type-schema/interface-schema.ts 1`] = `
 "import { transformTypeToSchema } from '../../../../src/transformerFunctions';
 export interface TestProps {
   prop_a: string;
@@ -136,9 +128,7 @@ const type3 = {
 };"
 `;
 
-exports[
-  `type-generator transforms ./fixtures/manual-converter/type-schema/interface-schema-maxDepth.ts 1`
-] = `
+exports[`type-generator transforms ./fixtures/manual-converter/type-schema/interface-schema-maxDepth.ts 1`] = `
 "import { transformTypeToSchema } from '../../../../src/transformerFunctions';
 export interface TestProps {
   level_1: {
@@ -167,9 +157,7 @@ const type4 = {
 };"
 `;
 
-exports[
-  `type-generator transforms ./fixtures/manual-converter/type-schema/mix-type-schema.ts 1`
-] = `
+exports[`type-generator transforms ./fixtures/manual-converter/type-schema/mix-type-schema.ts 1`] = `
 "import { ExternalProps } from '../typings';
 import { transformTypeToSchema } from '../../../../src/transformerFunctions';
 export interface TestProps {
@@ -197,9 +185,7 @@ const type = {
 };"
 `;
 
-exports[
-  `type-generator transforms ./fixtures/manual-converter/type-schema/skipParseTypeInFiles.ts 1`
-] = `
+exports[`type-generator transforms ./fixtures/manual-converter/type-schema/skipParseTypeInFiles.ts 1`] = `
 "import { ExternalProps } from '../typings';
 import { transformTypeToSchema } from '../../../../src/transformerFunctions';
 export interface TestProps {

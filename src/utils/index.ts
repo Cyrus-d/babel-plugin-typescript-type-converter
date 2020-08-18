@@ -6,3 +6,4 @@ export * from './mergeSchema';
 export * from './moduleDependencies';
 export * from './SourceFileCache';
 export * from './updateReferences';
+export * from './should-transform';
