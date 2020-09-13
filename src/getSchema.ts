@@ -110,7 +110,7 @@ export const generateTypeKeys = (
     return;
   }
 
-  const schema = getSchemaObject(node, state, typeNames, { ...options, maxDepth: 1 });
+  const schema = getSchemaObject(node, state, typeNames, options);
 
   if (!schema.properties) {
     setNullValue(path, id);
