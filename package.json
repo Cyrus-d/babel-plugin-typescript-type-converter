@@ -24,8 +24,7 @@
     "posttest": "yarn run lint"
   },
   "peerDependencies": {
-    "@babel/core": "^7.0.0",
-    "typescript": "^3.8.3"
+    "@babel/core": "^7.0.0"
   },
   "dependencies": {
     "@babel/helper-module-imports": "^7.8.3",
@@ -70,7 +69,6 @@
     "eslint-plugin-unicorn": "^18.0.1",
     "fast-glob": "^3.2.2",
     "jest": "^25.2.4",
-    "prop-types": "^15.7.2",
-    "typescript": "^3.8.3"
+    "prop-types": "^15.7.2"
   }
 }
