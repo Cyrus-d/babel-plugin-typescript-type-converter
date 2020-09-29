@@ -1,3 +1,4 @@
+/* eslint-disable sort-keys */
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
@@ -206,8 +207,6 @@ module.exports = {
             default: 'array',
           },
         ],
-        '@typescript-eslint/camelcase': 'error',
-        '@typescript-eslint/class-name-casing': 'error',
         '@typescript-eslint/consistent-type-assertions': [
           'error',
           {
@@ -254,6 +253,8 @@ module.exports = {
         '@typescript-eslint/triple-slash-reference': 'error',
         '@typescript-eslint/unified-signatures': 'error',
         '@typescript-eslint/type-annotation-spacing': 'error',
+        '@typescript-eslint/camelcase': 'off',
+        '@typescript-eslint/class-name-casing': 'off',
         'no-restricted-globals': 'off',
         'no-undef': 'off',
         'import/no-cycle': 'off',
@@ -321,6 +322,7 @@ module.exports = {
         'sort-keys': 'off',
         'compat/compat': 'off',
         'import/no-extraneous-dependencies': 'off',
+        'jest/no-test-callback': 'off',
         'jest/expect-expect': 'error',
         'jest/no-alias-methods': 'error',
         'jest/no-disabled-tests': 'error',
@@ -333,7 +335,6 @@ module.exports = {
         'jest/no-jasmine-globals': 'error',
         'jest/no-jest-import': 'error',
         'jest/no-standalone-expect': 'error',
-        'jest/no-test-callback': 'error',
         'jest/no-test-prefixes': 'error',
         'jest/no-test-return-statement': 'error',
         'jest/prefer-hooks-on-top': 'error',
