@@ -5538,10 +5538,10 @@ tr46@^2.0.2:
   dependencies:
     punycode "^2.1.1"
 
-ts-to-json@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/ts-to-json/-/ts-to-json-1.1.0.tgz#e7182dd18d0c3f92633a3d168fe7972c6e882cba"
-  integrity sha512-y1sCKhzV5uNfKBrc51zQM94Vs+J3gNFDgTBOgbYgsC/tIF5j0/f8PLZkTlk9JliNcuSN07g53mk5HxkIPivZAQ==
+ts-to-json@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/ts-to-json/-/ts-to-json-1.1.1.tgz#83d6c13b47c0e0176f33115e536ae6bcb8ea0a58"
+  integrity sha512-yvmcjT47sBCyv3/XwH4b+DoaHwsVQ0ZvKRNPNHkgvkYLlLbR3+k+SyuS8vbkBc9tphhWwqCtLWCMOQf2seZ49Q==
   dependencies:
     "@types/json-schema" "^7.0.4"
     commander "~5.1.0"
