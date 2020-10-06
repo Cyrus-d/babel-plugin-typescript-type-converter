@@ -1,6 +1,7 @@
 module.exports = {
   babelrc: false,
   comments: false,
+  ignore: ['tests/fixtures/**/*.js'],
   plugins: [
     [
       '@babel/plugin-proposal-class-properties',
@@ -39,5 +40,4 @@ module.exports = {
     ],
   ],
   sourceType: 'module',
-  ignore: ['tests/fixtures/**/*.js'],
 };

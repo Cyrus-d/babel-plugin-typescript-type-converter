@@ -14,7 +14,6 @@ export function transform(
       return plg;
     });
   }
-  if (pluginOptions.isProduction === undefined) pluginOptions.isProduction = false;
 
   return (
     transformFileSync(filePath, {
