@@ -5551,10 +5551,10 @@ tr46@^2.0.2:
   dependencies:
     punycode "^2.1.1"
 
-ts-to-json@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/ts-to-json/-/ts-to-json-1.6.0.tgz#b485f9920886c1ad50d8033a7d93fbd195ea5898"
-  integrity sha512-n4iHppzC6Lc23QU67w31MFEiDV8VuOhIbT4Oupr3iSN7cEP10I9+Xf7hjXjhwH1O8v++r59tyBIqcm2isht1Ig==
+ts-to-json@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/ts-to-json/-/ts-to-json-1.6.1.tgz#b387bbf034f9a3668d7f420d4752016fb3a6ecd8"
+  integrity sha512-TiN4Oh3zREx3KqwRUPrU9LIRBzfxoLZrxIoT2N3YoqZCJo/ksgaNycNj2RzBot3NoXwZPiCkndZmLQuaNWnKYA==
   dependencies:
     "@types/json-schema" "^7.0.9"
     commander "^9.0.0"
@@ -5639,11 +5639,6 @@ typedarray-to-buffer@^3.1.5:
   integrity sha512-zdu8XMNEDepKKR+XYOXAVPtWui0ly0NtohUscw+UmaHiAWT8hrV1rr//H6V+0DvJ3OQ19S979M0laLfX8rm82Q==
   dependencies:
     is-typedarray "^1.0.0"
-
-typescript@4.6.2:
-  version "4.6.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.6.2.tgz#fe12d2727b708f4eef40f51598b3398baa9611d4"
-  integrity sha512-HM/hFigTBHZhLXshn9sN37H085+hQGeJHJ/X7LpBWLID/fbc2acUMfU+lGD98X81sKP+pFa9f0DZmCwB9GnbAg==
 
 typescript@~4.6.2:
   version "4.6.3"
