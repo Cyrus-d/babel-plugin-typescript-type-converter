@@ -50,20 +50,26 @@ export const getSchema = (
     sourceFileCacheInstance.initializeSourceFiles(config, filePath);
   }
 
-  const program = createProgram(filePath);
+  try {
+    const program = createProgram(filePath);
 
-  const generator = new tsJson.SchemaGenerator(
-    program as any,
-    tsJson.createParser(program as any, config),
-    tsJson.createFormatter(config),
-    config,
-  );
+    const generator = new tsJson.SchemaGenerator(
+      program as any,
+      tsJson.createParser(program as any, config),
+      tsJson.createFormatter(config),
+      config,
+    );
 
-  const schema = generator.createSchema(config.type);
+    const schema = generator.createSchema(config.type);
 
-  setModuleDependencies(filePath, dependencyFiles);
+    setModuleDependencies(filePath, dependencyFiles);
 
-  return schema;
+    return schema;
+  } catch (error) {
+    console.error(error);
+
+    return {};
+  }
 };
 
 export function getSchemaObject<T>(
@@ -150,7 +156,7 @@ export const generateTypeSchema = (
 export function generateComponentPropSchema<
   T extends Path<any>,
   S extends ConvertState,
-  P extends t.TSIntersectionType | t.TSTypeReference | t.TSUnionType | undefined
+  P extends t.TSIntersectionType | t.TSTypeReference | t.TSUnionType | undefined,
 >(
   componentName: string,
   rootPath: T,
