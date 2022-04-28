@@ -84,7 +84,7 @@ export function getSchemaObject<T>(
 
   if (!schemaArr) return null;
 
-  const mergedSchema = mergeSchema(schemaArr as tsJson.Definition[]);
+  const mergedSchema = mergeSchema(schemaArr as tsJson.Definition[]) || {};
 
   if (!mergedSchema.properties) return null;
 
@@ -118,7 +118,7 @@ export const generateTypeKeys = (
 
   const schema = getSchemaObject(node, state, typeNames, options);
 
-  if (!schema.properties) {
+  if (!schema || !schema.properties) {
     setNullValue(path, id);
 
     return;
