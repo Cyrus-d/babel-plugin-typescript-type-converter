@@ -41,3 +41,4 @@ describe('type-generator', () => {
     ).toMatchSnapshot();
   });
 });
+ 
