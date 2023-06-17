@@ -7,10 +7,10 @@ import {
   getNodeTypesNames,
   mergeSchema,
   getTsTypeName,
-  createProgram,
   setModuleDependencies,
-  sourceFileCacheInstance,
   shouldTransform,
+  createProgram,
+  sourceFileCacheInstance,
 } from './utils';
 
 import { ConvertState, Path, PluginOptions } from './types';

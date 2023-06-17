@@ -2,6 +2,16 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "watch",
+      "type": "shell",
+      "group": "build",
+      "command": "npm run watch",
+      "problemMatcher": [],
+      "runOptions": {
+        "runOn": "folderOpen",
+      }
+    },
+    {
       "label": "Monitor TS Errors",
       "type": "typescript",
       "tsconfig": "tsconfig.json",
@@ -13,7 +23,6 @@
         "group": "watch",
         "panel": "shared"
       },
-      "auto": true
     },
     {
       "label": "Watch test file",

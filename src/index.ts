@@ -7,7 +7,7 @@
 import { declare } from '@babel/helper-plugin-utils';
 import { addDefault, addNamed } from '@babel/helper-module-imports';
 import syntaxTypeScript from '@babel/plugin-syntax-typescript';
-import { types as t } from '@babel/core';
+import { types as t, PluginObj } from '@babel/core';
 import { TSTypeParameterInstantiation } from '@babel/types';
 import { generateTypeSchema, generateComponentPropSchema, generateTypeKeys } from './getSchema';
 import addToClass from './addToClass';
@@ -17,6 +17,14 @@ import { TransformerData } from './typings';
 import upsertImport from './upsertImport';
 import { Path, PluginOptions, ConvertState, PropTypeDeclaration } from './types';
 import { cleanModuleDependenciesByPath, updateReferences, shouldTransform } from './utils';
+import {
+  TRANSFORM_TYPE_TO_KEYS,
+  TRANSFORM_TYPE_TO_SCHEMA,
+  TRANSFORM_TYPE_TO_PROP_TYPES,
+  TRANSFORM_COMPONENT_PROPS_TO_SCHEMA,
+} from './constants';
+
+// import { initializeFileWatcher } from './fileWatcher';
 
 const BABEL_VERSION = 7;
 const MAX_DEPTH = 3;
@@ -44,8 +52,10 @@ function isPropsType(param: t.Node): param is PropTypeDeclaration {
   return t.isTSTypeReference(param) || t.isTSIntersectionType(param) || t.isTSUnionType(param);
 }
 
-export default declare((api: any, options: PluginOptions, root: string) => {
+export default declare((api: any, options: PluginOptions, root: string): PluginObj => {
   api.assertVersion(BABEL_VERSION);
+
+  // initializeFileWatcher(root);
 
   return {
     inherits: syntaxTypeScript,
@@ -181,7 +191,7 @@ export default declare((api: any, options: PluginOptions, root: string) => {
                   state.airbnbPropTypes.count += 1;
                 }
 
-                if (node.callee.name === 'transformComponentPropsToSchema') {
+                if (node.callee.name === TRANSFORM_COMPONENT_PROPS_TO_SCHEMA) {
                   if (node.arguments.length > 0 && t.isIdentifier(node.arguments[0])) {
                     usingSchemaTransformer = true;
                     componentsToGeneratePropSchema.push({ name: node.arguments[0].name, node });
@@ -189,7 +199,7 @@ export default declare((api: any, options: PluginOptions, root: string) => {
                   }
                 }
 
-                if (node.callee.name === 'transformTypeToPropTypes') {
+                if (node.callee.name === TRANSFORM_TYPE_TO_PROP_TYPES) {
                   usingSchemaTransformer = true;
                   if (node.arguments.length > 0 && t.isIdentifier(node.arguments[0])) {
                     componentsToPropTypes.push(node.arguments[0].name);
@@ -228,12 +238,11 @@ export default declare((api: any, options: PluginOptions, root: string) => {
                   path,
                   propsType:
                     node.superTypeParameters?.params &&
-                    ((node.superTypeParameters?.params[0] as unknown) as t.TSIntersectionType),
+                    (node.superTypeParameters?.params[0] as unknown as t.TSIntersectionType),
                   state,
                 });
               }
             },
-
             // `function Foo(props: Props) {}`
             FunctionDeclaration(path: Path<t.FunctionDeclaration>) {
               const { node } = path;
@@ -279,9 +288,8 @@ export default declare((api: any, options: PluginOptions, root: string) => {
               state.referenceTypes[node.id.name] = node;
 
               node.members.forEach((member) => {
-                state.referenceTypes[
-                  `${node.id.name}.${(member.id as t.Identifier).name}`
-                ] = member;
+                state.referenceTypes[`${node.id.name}.${(member.id as t.Identifier).name}`] =
+                  member;
               });
             },
 
@@ -419,11 +427,11 @@ export default declare((api: any, options: PluginOptions, root: string) => {
                   }
                 }
 
-                if (t.isIdentifier(init.callee) && init.callee.name === 'transformTypeToSchema') {
+                if (t.isIdentifier(init.callee) && init.callee.name === TRANSFORM_TYPE_TO_SCHEMA) {
                   usingSchemaTransformer = true;
                   generateTypeSchema(id, path, init, state, options);
                 }
-                if (t.isIdentifier(init.callee) && init.callee.name === 'transformTypeToKeys') {
+                if (t.isIdentifier(init.callee) && init.callee.name === TRANSFORM_TYPE_TO_KEYS) {
                   usingSchemaTransformer = true;
                   generateTypeKeys(id, path, init, state, options);
                 }

@@ -38,6 +38,10 @@ class SourceFileCache {
     tsconfig = program.getCompilerOptions() as any;
   };
 
+  addSourceFile(fileKey: string, sourceFile: ts.SourceFile) {
+    this.sourceFilesCache = { ...this.sourceFilesCache, [fileKey]: sourceFile };
+  }
+
   initialized = () => this.sourceFilesCache !== undefined;
 
   getSourceFile = (fileKey: string, isAbsolutePath?: boolean) => {

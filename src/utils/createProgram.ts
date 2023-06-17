@@ -1,10 +1,13 @@
 import * as ts from 'typescript';
-import { getCompilerOptions, sourceFileCacheInstance } from './SourceFileCache';
+import { sourceFileCacheInstance } from './SourceFileCache';
+import { getTsCompilerOptions } from './get-ts-compiler-options';
 
 export const createProgram = (filePath: string) => {
-  const tsconfig = getCompilerOptions();
+  const tsconfig = getTsCompilerOptions();
   const program = ts.createProgram([filePath], tsconfig, {
     fileExists(fileName): boolean {
+      if (!fileName.endsWith('.ts') && !fileName.endsWith('.tsx')) return false;
+
       const file = sourceFileCacheInstance.createOrUpdateSourceFile(fileName);
       if (!file) {
         return false;
