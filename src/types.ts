@@ -1,8 +1,8 @@
-import { types as t, traverse } from '@babel/core';
+import { NodePath, types as t } from '@babel/core';
 import ts from 'typescript';
 import { Config } from 'ts-to-json';
 
-export type Path<N> = traverse.NodePath<N>;
+export type Path<N> = NodePath<N>;
 
 export interface TypePropertyMap {
   [key: string]: t.TSPropertySignature[];
@@ -33,6 +33,13 @@ export interface PluginOptions extends Partial<TsParserConfig> {
   disableGenerateReactPropSchemaInEnv?: string[];
   disableGenerateTypeSchemaInEnv?: string[];
   disableGenerateTypeKeysInEnv?: string[];
+  /**
+   * An array of glob patterns to exclude matches.
+   * This is an alternative way to use negative patterns.
+   *
+   * @default []
+   */
+  ignore?: string[];
 }
 
 export interface ConvertState {

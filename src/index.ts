@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-plusplus */
 /**
  * @copyright   2018-2019, Miles Johnson, mo doaie
  * @license     https://opensource.org/licenses/MIT
@@ -16,15 +18,25 @@ import extractTypeProperties from './extractTypeProperties';
 import { TransformerData } from './typings';
 import upsertImport from './upsertImport';
 import { Path, PluginOptions, ConvertState, PropTypeDeclaration } from './types';
-import { cleanModuleDependenciesByPath, updateReferences, shouldTransform } from './utils';
+import {
+  cleanModuleDependenciesByPath,
+  updateReferences,
+  shouldTransform,
+  getUpdateCacheFileContent,
+  setUpdateCacheFileContent,
+  getCacheFilePath,
+  sourceFileCacheInstance,
+} from './utils';
 import {
   TRANSFORM_TYPE_TO_KEYS,
   TRANSFORM_TYPE_TO_SCHEMA,
   TRANSFORM_TYPE_TO_PROP_TYPES,
   TRANSFORM_COMPONENT_PROPS_TO_SCHEMA,
+  UPDATE_CACHE_FILE_NAME,
 } from './constants';
-
-// import { initializeFileWatcher } from './fileWatcher';
+import { initializeFileWatcher } from './fileWatcher';
+import { ConfigAPI } from './typings/babel';
+import { onCompileFile } from './utils/isCompilationComplete';
 
 const BABEL_VERSION = 7;
 const MAX_DEPTH = 3;
@@ -52,10 +64,23 @@ function isPropsType(param: t.Node): param is PropTypeDeclaration {
   return t.isTSTypeReference(param) || t.isTSIntersectionType(param) || t.isTSUnionType(param);
 }
 
-export default declare((api: any, options: PluginOptions, root: string): PluginObj => {
+let init = false;
+
+export default declare((api: ConfigAPI, options: PluginOptions, root: string): PluginObj => {
   api.assertVersion(BABEL_VERSION);
 
-  // initializeFileWatcher(root);
+  sourceFileCacheInstance.initializeSourceFiles(root, options);
+
+  const cacheFileName = init
+    ? getCacheFilePath(root, UPDATE_CACHE_FILE_NAME)
+    : setUpdateCacheFileContent(root, { timestamp: Date.now() });
+
+  // const contents = api.cache.using(() => getUpdateCacheFileContent(root));
+  api.cache.using(() => getUpdateCacheFileContent(root));
+
+  api.addExternalDependency(cacheFileName);
+
+  init = true;
 
   return {
     inherits: syntaxTypeScript,
@@ -104,14 +129,16 @@ export default declare((api: any, options: PluginOptions, root: string): PluginO
 
     visitor: {
       Program: {
-        enter(programPath: Path<t.Program>, { filename }: any) {
+        enter(programPath: Path<t.Program>, programState: any) {
+          onCompileFile();
+          const { filename } = programState;
+
           const state = (this as any).state as ConvertState;
           let usingSchemaTransformer = false;
           state.filePath = filename;
           if (isNotTS(filename)) {
             return;
           }
-
           // updateSourceFileByPath(options as Config, filename, root);
 
           // Find existing `react` and `prop-types` imports
@@ -249,6 +276,7 @@ export default declare((api: any, options: PluginOptions, root: string): PluginO
 
               if (
                 !!state.reactImportedName &&
+                node.id &&
                 isComponentName(node.id.name) &&
                 isPropsParam(node.params[0]) &&
                 t.isTSTypeAnnotation(node.params[0].typeAnnotation) &&
@@ -287,7 +315,7 @@ export default declare((api: any, options: PluginOptions, root: string): PluginO
             TSEnumDeclaration({ node }: Path<t.TSEnumDeclaration>) {
               state.referenceTypes[node.id.name] = node;
 
-              node.members.forEach((member) => {
+              node.members.forEach((member: any) => {
                 state.referenceTypes[`${node.id.name}.${(member.id as t.Identifier).name}`] =
                   member;
               });
@@ -329,8 +357,8 @@ export default declare((api: any, options: PluginOptions, root: string): PluginO
               let props: PropTypeDeclaration | null = null;
 
               // const Foo: React.FC<Props> = () => {};
-              if (id.typeAnnotation && id.typeAnnotation.typeAnnotation) {
-                const type = id.typeAnnotation.typeAnnotation as any;
+              if (id.typeAnnotation && (id.typeAnnotation as any).typeAnnotation) {
+                const type = (id.typeAnnotation as any).typeAnnotation;
 
                 if (
                   t.isTSTypeReference(type) &&
@@ -429,11 +457,11 @@ export default declare((api: any, options: PluginOptions, root: string): PluginO
 
                 if (t.isIdentifier(init.callee) && init.callee.name === TRANSFORM_TYPE_TO_SCHEMA) {
                   usingSchemaTransformer = true;
-                  generateTypeSchema(id, path, init, state, options);
+                  generateTypeSchema(root, id, path, init, state, options);
                 }
                 if (t.isIdentifier(init.callee) && init.callee.name === TRANSFORM_TYPE_TO_KEYS) {
                   usingSchemaTransformer = true;
-                  generateTypeKeys(id, path, init, state, options);
+                  generateTypeKeys(root, id, path, init, state, options);
                 }
               }
 
@@ -464,6 +492,7 @@ export default declare((api: any, options: PluginOptions, root: string): PluginO
             const generatorInfo = componentsToGeneratePropSchema.find((x) => x.name === name);
             if (generatorInfo) {
               generateComponentPropSchema(
+                root,
                 name,
                 path,
                 state,
@@ -479,12 +508,17 @@ export default declare((api: any, options: PluginOptions, root: string): PluginO
           }
         },
 
-        exit(path: Path<t.Program>, { filename }: any) {
+        exit(path: Path<t.Program>, programState: any) {
+          onCompileFile();
+
+          const { filename } = programState;
+
           const state = (this as any).state as ConvertState;
 
           if (isNotTS(filename)) {
             return;
           }
+
           updateReferences(filename);
           // cleanModuleDependenciesByPath(filename);
           // console.log(filename);

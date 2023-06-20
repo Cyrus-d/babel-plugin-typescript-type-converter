@@ -1,41 +1,36 @@
 import * as ts from 'typescript';
-import { createProgram, Config } from 'ts-to-json';
 import path from 'path';
-import { getFileKey } from '.';
+import glob from 'fast-glob';
 import { getModuleDependencies } from './moduleDependencies';
-import { watchNodeModules } from './watchNodeModules';
+// import { watchNodeModules } from './watchNodeModules';
 import { getSourceFileText } from './getSourceFileText';
+import { getTsCompilerOptions } from './get-ts-compiler-options';
+import { getFileKey } from './getFileKey';
+import { PluginOptions } from '../types';
 
 interface SourceFileObject {
   [key: string]: ts.SourceFile | null;
 }
 
-let tsconfig: ts.CompilerOptions = {
-  emitDecoratorMetadata: true,
-  experimentalDecorators: true,
-  module: ts.ModuleKind.CommonJS,
-  noEmit: true,
-  strictNullChecks: false,
-  target: ts.ScriptTarget.ES5,
-};
+const tsconfig: ts.CompilerOptions = getTsCompilerOptions();
 
 class SourceFileCache {
-  sourceFilesCache: SourceFileObject | undefined;
+  sourceFilesCache: SourceFileObject = {};
 
-  initializeSourceFiles = (config: Config, fileName: string) => {
-    if (config.path === undefined) config.path = fileName;
-    if (config.skipTypeCheck === undefined) config.skipTypeCheck = true;
-    this.sourceFilesCache = {};
-    const program = createProgram(config);
-    this.sourceFilesCache = program.getSourceFiles().reduce((obj, sourceFile) => {
-      const fileKey = getFileKey(sourceFile.fileName);
-      obj[fileKey] = sourceFile as any;
-      watchNodeModules(sourceFile.fileName);
+  initializeSourceFiles = (root: string, options: PluginOptions) => {
+    const { ignore = [] } = options;
 
-      return obj;
-    }, {} as SourceFileObject);
+    const files = glob.sync('**/*.{ts,tsx}', { cwd: root, ignore: ['node_modules/**', ...ignore] });
 
-    tsconfig = program.getCompilerOptions() as any;
+    const program = ts.createProgram(files, getTsCompilerOptions());
+
+    const sourceFiles = program.getSourceFiles();
+
+    // let cnt = 0;
+    sourceFiles.forEach((sourceFile) => {
+      const sourceFilePath = path.resolve(root, sourceFile.fileName);
+      this.addSourceFile(sourceFilePath, sourceFile);
+    });
   };
 
   addSourceFile(fileKey: string, sourceFile: ts.SourceFile) {
@@ -73,7 +68,6 @@ class SourceFileCache {
     forceUpdateIfDiff?: boolean,
     ignoreDiffCheck?: boolean,
   ) => {
-    if (!this.sourceFilesCache) return undefined;
     const fileKey = getFileKey(fileName);
 
     const sourceFileCache = this.getSourceFile(fileKey, path.isAbsolute(fileName));
@@ -85,6 +79,7 @@ class SourceFileCache {
     }
 
     const text = getSourceFileText(fileName);
+
     if (text === null) return undefined;
 
     // nothing to update
@@ -99,15 +94,14 @@ class SourceFileCache {
       true,
       ts.ScriptKind.TS,
     );
-    this.sourceFilesCache[fileKey] = sourceFile;
 
-    watchNodeModules(fileName);
+    this.sourceFilesCache[fileKey] = sourceFile;
 
     return sourceFile;
   };
 
-  getAllSourceFiles = () => {
-    return this.sourceFilesCache;
+  getAllSourceFiles = (): ts.SourceFile[] => {
+    return Object.values(this.sourceFilesCache).filter((x) => x !== null) as ts.SourceFile[];
   };
 
   updateSourceFileByPath = (filePath: string, forceUpdate?: boolean) => {
@@ -130,10 +124,6 @@ class SourceFileCache {
     this.createOrUpdateSourceFile(filePath, true, forceUpdate);
   };
 }
-
-export const getCompilerOptions = () => {
-  return tsconfig;
-};
 
 export const sourceFileCacheInstance = new SourceFileCache();
 

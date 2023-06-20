@@ -13,4 +13,7 @@ export * from './resolveRelativePath';
 export * from './should-transform';
 export * from './SourceFileCache';
 export * from './updateReferences';
-export * from './watchNodeModules';
+export * from './FileMap';
+export * from './getWatcher';
+export * from './cache-fs';
+export * from './updateTerminalLine';

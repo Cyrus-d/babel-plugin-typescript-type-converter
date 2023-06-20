@@ -1,6 +1,4 @@
-export const getFileKey = (fileName: string) =>
-  fileName
-    .split('/')
-    .join('_')
-    .split('\\')
-    .join('_');
+/* eslint-disable require-unicode-regexp */
+import path from 'path';
+
+export const getFileKey = (fileName: string) => path.normalize(fileName).replace(/\\/g, '/');

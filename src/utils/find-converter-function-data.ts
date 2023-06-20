@@ -1,5 +1,8 @@
 /* eslint-disable no-restricted-syntax */
 import * as ts from 'typescript';
+import * as converterFuncNames from '../constants/convert-functions';
+
+const convertFuncNamesArr = Object.values(converterFuncNames);
 
 interface FunctionInfo {
   functionName: string;
@@ -26,7 +29,7 @@ function getTypeImportPath(typeName: ts.Identifier, sourceFile: ts.SourceFile): 
 
 export function findConverterFunctionData(
   sourceFile: ts.SourceFile,
-  functionNames: string[],
+  functionNames: string[] = convertFuncNamesArr,
 ): FunctionInfo[] {
   const functionInfos: FunctionInfo[] = [];
 

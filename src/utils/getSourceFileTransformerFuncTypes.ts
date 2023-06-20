@@ -1,47 +1,49 @@
 /* eslint-disable no-magic-numbers */
 import ts from 'typescript';
-import path from 'path';
 import { findConverterFunctionData } from './find-converter-function-data';
-import * as converterFuncNames from '../constants/convert-functions';
-import { resolveRelativePath } from './resolveRelativePath';
-import { findExportedInterfacesAndTypes } from './findExportedInterfacesAndTypes';
-
-const convertFuncNamesArr = Object.values(converterFuncNames);
+import { findSourceFileByFileNameAndType } from './findSourceFileByFileNameAndType';
+import { getAllConnectedSourceFilesByType } from './getAllConnectedSourceFilesByType';
 
 export const getSourceFileTransformerFuncTypes = (
-  root: string,
+  projectRootPath: string,
   sourceFiles: readonly ts.SourceFile[],
   sourceFile: ts.SourceFile,
 ) => {
-  const sourceFilePath = path.resolve(root, sourceFile.fileName);
-
-  const transformerFuncData = findConverterFunctionData(sourceFile, convertFuncNamesArr);
-
-  const transformerFuncTypesSourceFiles: ts.SourceFile[] = [];
+  const transformerFuncData = findConverterFunctionData(sourceFile);
+  const transformerTypesSourceFiles: ts.SourceFile[] = [];
 
   if (transformerFuncData.length > 0) {
     transformerFuncData.forEach(({ types: transformerFuncTypes }) => {
       transformerFuncTypes.forEach(({ path: typePath, name: typeName }) => {
         if (typePath) {
-          const typeAbsolutePath = resolveRelativePath(sourceFilePath, typePath);
-
-          const typeSourceFiles = sourceFiles.filter((x) =>
-            resolveRelativePath(sourceFilePath, x.fileName).startsWith(typeAbsolutePath),
+          const typeSourceFile = findSourceFileByFileNameAndType(
+            projectRootPath,
+            sourceFiles,
+            sourceFile,
+            typePath,
+            typeName,
           );
 
-          typeSourceFiles.forEach((typeSourceFile) => {
-            const typeSourceFileTypes = findExportedInterfacesAndTypes(typeSourceFile);
-            if (
-              typeSourceFileTypes.includes(typeName) &&
-              !transformerFuncTypesSourceFiles.includes(typeSourceFile)
-            ) {
-              transformerFuncTypesSourceFiles.push(typeSourceFile);
-            }
-          });
+          if (typeSourceFile) {
+            const allConnectedTypes = getAllConnectedSourceFilesByType(
+              projectRootPath,
+              sourceFiles,
+              typeSourceFile,
+              typeName,
+            );
+
+            transformerTypesSourceFiles.push(typeSourceFile);
+
+            allConnectedTypes.forEach((connectedType) => {
+              if (!transformerTypesSourceFiles.includes(connectedType)) {
+                transformerTypesSourceFiles.push(connectedType);
+              }
+            });
+          }
         }
       });
     });
   }
 
-  return transformerFuncTypesSourceFiles;
+  return transformerTypesSourceFiles;
 };

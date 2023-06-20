@@ -1,148 +1,150 @@
+/* eslint-disable require-unicode-regexp */
+/* eslint-disable no-console */
 /* eslint-disable no-magic-numbers */
-import { watch } from 'chokidar';
 import debounce from 'lodash/debounce';
 import * as ts from 'typescript';
 import glob from 'fast-glob';
 import path from 'path';
-import fs from 'fs';
 import {
+  FileMap,
   getSourceFileTransformerFuncTypes,
   getTsCompilerOptions,
+  getWatcher,
   resolveRelativePath,
+  setUpdateCacheFileContent,
   sourceFileCacheInstance,
 } from './utils';
+import { PluginOptions } from './types';
+import { ConfigAPI } from './typings';
 
-// interface WatchingFile {
-//   [filePathThatReferencedType: string]: true;
-// }
+let INITIALIZED = false;
 
-type FilePathsThatReferencedType = string[];
+type FilePathsThatReferencedType = FileMap<string, true>;
+type TransformerFuncTypesFiles = FileMap<string, true>;
 
-const typesFilePaths = new Map<string, FilePathsThatReferencedType>();
+const typesFilePaths = new FileMap<string, FilePathsThatReferencedType>();
 
-const onFileChange = (event: string, path: string) => {
+const transformerFuncFilesAndTypes = new FileMap<string, TransformerFuncTypesFiles>();
+
+const onFileChangeDenounced = debounce((event: string, root: string, filePath: string) => {
   if (event === 'unlink' || event === 'unlinkDir') {
-    // sometime cause problem when updating package, because file will be removed first than replaced
-    // deleteModuleReference(path);
+    return;
   }
 
-  if (typesFilePaths.has(path)) {
-    sourceFileCacheInstance.updateSourceFileByPath(path);
-    typesFilePaths.get(path)!.forEach((filePathWithTransformerFunc) => {
-      fs.utimes(filePathWithTransformerFunc, new Date(), new Date(), (err) => {
-        if (err) console.error(`[typescript-type-transformer]${err}`);
-      });
+  if (typesFilePaths.has(filePath)) {
+    sourceFileCacheInstance.updateSourceFileByPath(filePath);
+    console.log('---------onFileChangeDenounced-----------');
+    console.log(filePath);
+    console.log(typesFilePaths.get(filePath));
+    console.log('-----------------------------------------');
+    setUpdateCacheFileContent(root, { timestamp: Date.now() });
+  }
+}, 500);
 
-      fs.appendFile(
-        filePathWithTransformerFunc,
-        // `//babel-typescript-type-transformer:updateTimeStamp=${Date.now()}`,
-        `//typescript-type-transformer:update=${Date.now()}\n`,
-        (err) => {
-          if (err) {
-            console.error(`[typescript-type-transformer]${err}`);
-          }
-        },
-      );
-
-      // fs.readFile(filePathWithTransformerFunc, 'utf8', (err, data) => {
-      //   if (err) {
-      //     console.error('Error reading file:', err);
-
-      //     return;
-      //   }
-
-      //   // Remove lines that start with '//typescript-type-transformer'
-      //   // eslint-disable-next-line require-unicode-regexp
-      //   const updatedData = data.replace(/^\/\/typescript-type-transformer.*$/gm, '');
-
-      //   fs.writeFile(filePathWithTransformerFunc, updatedData, 'utf8', (err) => {
-      //     if (err) {
-      //       console.error('Error writing to file:', err);
-
-      //       return;
-      //     }
-
-      //     console.log('Lines removed successfully!');
-      //   });
-      // });
+const onTransformerFileDelete = debounce((path: string) => {
+  const transformerTypesFiles = transformerFuncFilesAndTypes.get(path);
+  if (transformerTypesFiles) {
+    transformerTypesFiles.keys().forEach((typePath) => {
+      const typePathTransformerFuncFiles = typesFilePaths.get(typePath);
+      if (typePathTransformerFuncFiles) {
+        typePathTransformerFuncFiles.delete(path);
+      }
     });
   }
-  // sourceFileCacheInstance.createOrUpdateSourceFile(path, true);
-  // updateReferences(path);
+  transformerFuncFilesAndTypes.delete(path);
+}, 500);
+
+const watchFilesWithTransformerTypesType = (projectRootPath: string, filePath: string) => {
+  const watcher = getWatcher(filePath);
+  watcher.on('all', (ev, file) => onFileChangeDenounced(ev, projectRootPath, file));
 };
 
-const onFileChangeDenounced = debounce(onFileChange, 100);
+const watchTransformerFiles = (filePath: string) => {
+  const watcher = getWatcher(filePath);
 
-export const watchFile = (filePath: string) => {
-  const watcher = watch(filePath, {
-    awaitWriteFinish: {
-      pollInterval: 100,
-      stabilityThreshold: 1000,
-    },
-    disableGlobbing: true,
-    ignoreInitial: true,
-  });
-
-  watcher.on('all', onFileChangeDenounced);
+  watcher.on('unlink', () => onTransformerFileDelete(filePath));
+  watcher.on('unlinkDir', () => onTransformerFileDelete(filePath));
 };
 
-function addReferencedFilePath(typeFilePath: string, referencedFilePath: string) {
+function setTypeToTransformerMap(typeFilePath: string, referencedFilePath: string) {
   if (!typesFilePaths.has(typeFilePath)) {
-    typesFilePaths.set(typeFilePath, []);
+    typesFilePaths.set(typeFilePath, new FileMap());
   }
 
   const referencedTypes = typesFilePaths.get(typeFilePath);
-  referencedTypes!.push(referencedFilePath);
+
+  if (referencedTypes?.has(typeFilePath)) return;
+
+  referencedTypes!.set(referencedFilePath, true);
 }
 
-export const initializeFileWatcher = (root: string) => {
-  const files = glob.sync('**/*.{ts,tsx}', { ignore: ['node_modules/**'] });
-  const program = ts.createProgram(files, getTsCompilerOptions());
+const processSourceFile = (
+  projectRootPath: string,
+  sourceFiles: readonly ts.SourceFile[] | ts.SourceFile[],
+  sourceFile: ts.SourceFile,
+) => {
+  const sourceFilePath = path.resolve(projectRootPath, sourceFile.fileName);
 
-  const sourceFiles = program.getSourceFiles();
+  const transformerFuncTypesSourceFiles = getSourceFileTransformerFuncTypes(
+    projectRootPath,
+    sourceFiles,
+    sourceFile,
+  );
 
-  sourceFiles.forEach((sourceFile) => {
-    const sourceFilePath = path.resolve(root, sourceFile.fileName);
+  const hasTransformerTypes = transformerFuncTypesSourceFiles.length > 0;
 
-    sourceFileCacheInstance.addSourceFile(sourceFilePath, sourceFile);
+  if (hasTransformerTypes) {
+    const transformerFuncTypesFilePaths = new FileMap() as TransformerFuncTypesFiles;
 
-    const transformerFuncTypesSourceFiles = getSourceFileTransformerFuncTypes(
-      root,
-      sourceFiles,
-      sourceFile,
-    );
+    transformerFuncTypesSourceFiles.forEach((transformerFuncTypesSourceFile, i) => {
+      const transformerFuncTypesSourceFilePath = resolveRelativePath(
+        sourceFilePath,
+        transformerFuncTypesSourceFile.fileName,
+      );
 
-    if (transformerFuncTypesSourceFiles.length > 0) {
-      transformerFuncTypesSourceFiles.forEach((transformerFuncTypesSourceFile) => {
-        const transformerFuncTypesSourceFilePath = resolveRelativePath(
-          sourceFilePath,
-          transformerFuncTypesSourceFile.fileName,
-        );
+      transformerFuncTypesFilePaths.set(transformerFuncTypesSourceFilePath, true);
 
-        watchFile(transformerFuncTypesSourceFilePath);
+      if (!typesFilePaths.has(transformerFuncTypesSourceFilePath)) {
+        watchFilesWithTransformerTypesType(projectRootPath, transformerFuncTypesSourceFilePath);
+      }
 
-        addReferencedFilePath(transformerFuncTypesSourceFilePath, sourceFilePath);
-      });
-    }
-  });
+      setTypeToTransformerMap(transformerFuncTypesSourceFilePath, sourceFilePath);
+    });
+
+    transformerFuncFilesAndTypes.set(sourceFilePath, transformerFuncTypesFilePaths);
+    watchTransformerFiles(sourceFilePath);
+  }
+
+  return hasTransformerTypes;
 };
 
-export const removeTriggerStringFormFile = (filename: string) => {
-  fs.readFile(filename, 'utf8', (err, data) => {
-    if (err) {
-      console.error('Error reading file:', err);
+export const processFilePath = (root: string, filepath: string) => {
+  const sourceFileCache = sourceFileCacheInstance.createOrUpdateSourceFile(filepath, true);
+  if (sourceFileCache) {
+    processSourceFile(root, sourceFileCacheInstance.getAllSourceFiles(), sourceFileCache);
+  }
+};
 
-      return;
-    }
+export const initializeFileWatcher = (api: ConfigAPI, root: string, options: PluginOptions) => {
+  if (!INITIALIZED) {
+    const { ignore = [] } = options;
 
-    // Remove lines that start with '//typescript-type-transformer'
-    // eslint-disable-next-line require-unicode-regexp
-    const updatedData = data.replace(/^\/\/typescript-type-transformer.*$/gm, '');
+    INITIALIZED = true;
 
-    fs.writeFile(filename, updatedData, 'utf8', (err) => {
-      if (err) {
-        console.error('Error writing to file:', err);
-      }
+    const files = glob.sync('**/*.{ts,tsx}', { cwd: root, ignore: ['node_modules/**', ...ignore] });
+
+    const program = ts.createProgram(files, getTsCompilerOptions());
+
+    const sourceFiles = program.getSourceFiles();
+
+    // let cnt = 0;
+    sourceFiles.forEach((sourceFile) => {
+      const sourceFilePath = path.resolve(root, sourceFile.fileName);
+      sourceFileCacheInstance.addSourceFile(sourceFilePath, sourceFile);
     });
-  });
+
+    sourceFiles.forEach((sourceFile) => {
+      processSourceFile(root, sourceFiles, sourceFile);
+    });
+  }
 };
