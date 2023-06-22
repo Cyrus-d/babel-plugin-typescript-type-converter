@@ -1,5 +1,5 @@
 import path from 'path';
-import { getFileKey } from './getFileKey';
+import { normalizeFilePath } from './normalizeFilePath';
 
 export interface Dependencies {
   [k: string]: Dependencies;
@@ -11,7 +11,7 @@ const moduleReferences = new Map<string, Set<string>>();
 const cleanModuleDependencies = (moduleKey: string) => {
   const oldDeps = moduleDependencies.get(moduleKey);
   if (!oldDeps) return;
-  oldDeps.forEach(importKey => {
+  oldDeps.forEach((importKey) => {
     const importModule = moduleReferences.get(importKey);
 
     if (importModule) {
@@ -27,12 +27,12 @@ const cleanModuleDependencies = (moduleKey: string) => {
 };
 
 export const cleanModuleDependenciesByPath = (filePath: string) => {
-  const fileKey = getFileKey(filePath);
+  const fileKey = normalizeFilePath(filePath);
   cleanModuleDependencies(fileKey);
 };
 
 export const setModuleReferences = (modulePath: string, refModule: string) => {
-  const fileKey = getFileKey(modulePath);
+  const fileKey = normalizeFilePath(modulePath);
 
   const module = moduleReferences.get(fileKey);
 
@@ -44,7 +44,7 @@ export const setModuleReferences = (modulePath: string, refModule: string) => {
 };
 
 export const setModuleDependencies = (modulePath: string, dependencies: string[]) => {
-  const fileKey = getFileKey(modulePath);
+  const fileKey = normalizeFilePath(modulePath);
 
   cleanModuleDependencies(fileKey);
 
@@ -54,8 +54,8 @@ export const setModuleDependencies = (modulePath: string, dependencies: string[]
 
   const dependencySet = new Set<string>();
 
-  new Set(dependencies).forEach(dep => {
-    const importKey = getFileKey(dep);
+  new Set(dependencies).forEach((dep) => {
+    const importKey = normalizeFilePath(dep);
     if (fileKey !== importKey) {
       dependencySet.add(path.normalize(dep));
 
@@ -67,13 +67,13 @@ export const setModuleDependencies = (modulePath: string, dependencies: string[]
 };
 
 export const getModuleDependencies = (modulePath: string) => {
-  const key = getFileKey(modulePath);
+  const key = normalizeFilePath(modulePath);
 
   return moduleDependencies.get(key);
 };
 
 export const getModuleReferences = (fileName: string) => {
-  const fileKey = getFileKey(fileName);
+  const fileKey = normalizeFilePath(fileName);
   const modules = moduleReferences.get(fileKey);
 
   return modules;
@@ -84,6 +84,6 @@ export const getAllModuleReferences = () => {
 };
 
 export const deleteModuleReference = (fileName: string) => {
-  const fileKey = getFileKey(fileName);
+  const fileKey = normalizeFilePath(fileName);
   moduleReferences.delete(fileKey);
 };

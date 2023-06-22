@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
-import { sourceFileCacheInstance } from './SourceFileCache';
-import { getTsCompilerOptions } from './get-ts-compiler-options';
+import { getTsCompilerOptions } from './utils';
+import { sourceFileCache } from './SourceFileCache';
 
 export const createProgram = (filePath: string) => {
   const tsconfig = getTsCompilerOptions();
@@ -8,7 +8,7 @@ export const createProgram = (filePath: string) => {
     fileExists(fileName): boolean {
       if (!fileName.endsWith('.ts') && !fileName.endsWith('.tsx')) return false;
 
-      const file = sourceFileCacheInstance.createOrUpdateSourceFile(fileName);
+      const file = sourceFileCache.createOrUpdateSourceFile(fileName);
       if (!file) {
         return false;
       }
@@ -29,10 +29,10 @@ export const createProgram = (filePath: string) => {
       return '\r\n';
     },
     getSourceFile(fileName): ts.SourceFile | undefined {
-      return sourceFileCacheInstance.createOrUpdateSourceFile(fileName);
+      return sourceFileCache.createOrUpdateSourceFile(fileName);
     },
     readFile(fileName: string): string {
-      const src = sourceFileCacheInstance.createOrUpdateSourceFile(fileName);
+      const src = sourceFileCache.createOrUpdateSourceFile(fileName);
       if (!src) return '';
 
       return src.text;

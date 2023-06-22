@@ -20,12 +20,10 @@ import upsertImport from './upsertImport';
 import { Path, PluginOptions, ConvertState, PropTypeDeclaration } from './types';
 import {
   cleanModuleDependenciesByPath,
-  updateReferences,
   shouldTransform,
   getUpdateCacheFileContent,
   setUpdateCacheFileContent,
   getCacheFilePath,
-  sourceFileCacheInstance,
 } from './utils';
 import {
   TRANSFORM_TYPE_TO_KEYS,
@@ -34,9 +32,10 @@ import {
   TRANSFORM_COMPONENT_PROPS_TO_SCHEMA,
   UPDATE_CACHE_FILE_NAME,
 } from './constants';
-import { initializeFileWatcher } from './fileWatcher';
 import { ConfigAPI } from './typings/babel';
 import { onCompileFile } from './utils/isCompilationComplete';
+import { sourceFileCache } from './SourceFileCache';
+import { instantiateTransformerDependencyWatcher } from './TransformerDependencyWatcher';
 
 const BABEL_VERSION = 7;
 const MAX_DEPTH = 3;
@@ -69,16 +68,20 @@ let init = false;
 export default declare((api: ConfigAPI, options: PluginOptions, root: string): PluginObj => {
   api.assertVersion(BABEL_VERSION);
 
-  sourceFileCacheInstance.initializeSourceFiles(root, options);
+  sourceFileCache.initialize(root, options);
 
-  const cacheFileName = init
-    ? getCacheFilePath(root, UPDATE_CACHE_FILE_NAME)
-    : setUpdateCacheFileContent(root, { timestamp: Date.now() });
+  instantiateTransformerDependencyWatcher({ ...options, root });
 
-  // const contents = api.cache.using(() => getUpdateCacheFileContent(root));
-  api.cache.using(() => getUpdateCacheFileContent(root));
+  if (process.env.NODE_ENV !== 'test') {
+    const cacheFileName = init
+      ? getCacheFilePath(root, UPDATE_CACHE_FILE_NAME)
+      : setUpdateCacheFileContent(root, { timestamp: Date.now() });
 
-  api.addExternalDependency(cacheFileName);
+    // const contents = api.cache.using(() => getUpdateCacheFileContent(root));
+    api.cache.using(() => getUpdateCacheFileContent(root));
+
+    api.addExternalDependency(cacheFileName);
+  }
 
   init = true;
 
@@ -519,9 +522,7 @@ export default declare((api: ConfigAPI, options: PluginOptions, root: string): P
             return;
           }
 
-          updateReferences(filename);
           // cleanModuleDependenciesByPath(filename);
-          // console.log(filename);
           // updateReferences(filename);
           // Remove the `prop-types` import of no components exist,
           // and be sure not to remove pre-existing imports.

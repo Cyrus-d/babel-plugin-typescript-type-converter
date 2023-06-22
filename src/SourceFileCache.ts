@@ -1,23 +1,17 @@
 import * as ts from 'typescript';
 import path from 'path';
 import glob from 'fast-glob';
-import { getModuleDependencies } from './moduleDependencies';
-// import { watchNodeModules } from './watchNodeModules';
-import { getSourceFileText } from './getSourceFileText';
-import { getTsCompilerOptions } from './get-ts-compiler-options';
-import { getFileKey } from './getFileKey';
-import { PluginOptions } from '../types';
-
-interface SourceFileObject {
-  [key: string]: ts.SourceFile | null;
-}
+import { FileMap, getModuleDependencies, getSourceFileText, getTsCompilerOptions } from './utils';
+import { PluginOptions } from './types';
 
 const tsconfig: ts.CompilerOptions = getTsCompilerOptions();
 
 class SourceFileCache {
-  sourceFilesCache: SourceFileObject = {};
+  sourceFilesCache!: FileMap<string, ts.SourceFile | null>;
 
-  initializeSourceFiles = (root: string, options: PluginOptions) => {
+  initialize = (root: string, options: PluginOptions) => {
+    this.sourceFilesCache = new FileMap(options);
+
     const { ignore = [] } = options;
 
     const files = glob.sync('**/*.{ts,tsx}', { cwd: root, ignore: ['node_modules/**', ...ignore] });
@@ -34,33 +28,34 @@ class SourceFileCache {
   };
 
   addSourceFile(fileKey: string, sourceFile: ts.SourceFile) {
-    this.sourceFilesCache = { ...this.sourceFilesCache, [fileKey]: sourceFile };
+    this.sourceFilesCache.set(fileKey, sourceFile);
   }
 
   initialized = () => this.sourceFilesCache !== undefined;
 
   getSourceFile = (fileKey: string, isAbsolutePath?: boolean) => {
-    if (!this.sourceFilesCache) return undefined;
     const { sourceFilesCache } = this;
 
-    if (sourceFilesCache[fileKey] !== undefined || isAbsolutePath) {
-      return sourceFilesCache[fileKey];
-    }
+    const fromCache = sourceFilesCache.get(fileKey);
 
-    // if no absolute path and only file name like lib.dom.iterable.d.ts
-    const file = Object.keys(sourceFilesCache).find((x) => x.endsWith(fileKey));
+    return fromCache;
+    // if (fromCache !== undefined || isAbsolutePath) {
+    //   return fromCache;
+    // }
 
-    if (file) {
-      // for performance changing key, so next time no need to search
-      sourceFilesCache[fileKey] = sourceFilesCache[file];
+    // // if no absolute path and only file name like lib.dom.iterable.d.ts
+    // const searchResultFilePath = Object.keys(sourceFilesCache).find((x) => x.endsWith(fileKey));
 
-      return sourceFilesCache[file];
-    }
+    // if (searchResultFilePath) {
+    //   // for performance changing key, so next time no need to search
+    //   sourceFilesCache.set(fileKey, sourceFilesCache.get(searchResultFilePath)!);
 
-    // probably source file never going to be available, so set it to null to prevent search for it again
-    sourceFilesCache[fileKey] = null;
+    //   return sourceFilesCache.get(searchResultFilePath);
+    // }
 
-    return undefined;
+    // sourceFilesCache.set(fileKey, null);
+
+    // return undefined;
   };
 
   createOrUpdateSourceFile = (
@@ -68,9 +63,7 @@ class SourceFileCache {
     forceUpdateIfDiff?: boolean,
     ignoreDiffCheck?: boolean,
   ) => {
-    const fileKey = getFileKey(fileName);
-
-    const sourceFileCache = this.getSourceFile(fileKey, path.isAbsolute(fileName));
+    const sourceFileCache = this.getSourceFile(fileName, path.isAbsolute(fileName));
 
     if (!forceUpdateIfDiff) {
       if (sourceFileCache) {
@@ -95,7 +88,7 @@ class SourceFileCache {
       ts.ScriptKind.TS,
     );
 
-    this.sourceFilesCache[fileKey] = sourceFile;
+    this.sourceFilesCache.set(fileName, sourceFile);
 
     return sourceFile;
   };
@@ -125,6 +118,6 @@ class SourceFileCache {
   };
 }
 
-export const sourceFileCacheInstance = new SourceFileCache();
+const sourceFileCache = new SourceFileCache();
 
-export { SourceFileCache };
+export { sourceFileCache, SourceFileCache };

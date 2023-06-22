@@ -40,6 +40,25 @@ export interface PluginOptions extends Partial<TsParserConfig> {
    * @default []
    */
   ignore?: string[];
+
+  /**
+   * Lerna Working directories
+   */
+  workspaceDirs?: string[];
+
+  /**
+   * Since Babel does not offer a suitable method for cache invalidation for single, the following options provided:
+   * None: use must update the file with transformer function manually by changing it content so babel invalidate the file cache
+   * ExternalDependency: uses new `addExternalDependency` function very slow and sometime it works and sometime it doesn't
+   * Comment: must reliable way, but it will add a comment to end if each file with transformer function
+   */
+  cacheInvalidationStrategy?: 'none' | 'externalDependency' | 'comment';
+
+  showDebugMessages?: boolean;
+}
+
+export interface PluginOptionsInternal extends PluginOptions {
+  root: string;
 }
 
 export interface ConvertState {

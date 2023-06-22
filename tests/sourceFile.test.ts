@@ -1,7 +1,7 @@
 import path from 'path';
-import { SourceFileCache } from '../src/utils/SourceFileCache';
-import { getFileKey } from '../src/utils/getFileKey';
 import { setModuleDependencies } from '../src/utils/moduleDependencies';
+import { normalizeFilePath } from '../src/utils/normalizeFilePath';
+import { SourceFileCache } from '../src/SourceFileCache';
 
 jest.mock('chokidar', () => ({ watch: jest.fn(() => ({ on: jest.fn(() => {}) })) }));
 
@@ -11,14 +11,12 @@ describe('sourceFile', () => {
     './fixtures/manual-converter/type-schema/interface-schema.ts',
   );
 
-  const {
-    initializeSourceFiles,
-    getAllSourceFiles,
-    getSourceFile,
-    createOrUpdateSourceFile,
-  } = new SourceFileCache();
+  const { initialize, getAllSourceFiles, getSourceFile, createOrUpdateSourceFile } =
+    new SourceFileCache();
 
-  initializeSourceFiles({ expose: 'none', jsDoc: 'none', topRef: true }, filePath);
+  initialize(__dirname, {});
+
+  createOrUpdateSourceFile(filePath);
 
   it('should initialize sourceFiles', () => {
     const allSourceFiles = getAllSourceFiles();
@@ -26,19 +24,19 @@ describe('sourceFile', () => {
   });
 
   it('should not create source file if exist', () => {
-    const src = getSourceFile(getFileKey(filePath), true);
+    const src = getSourceFile(filePath, true);
     const srcCatch = createOrUpdateSourceFile(filePath);
     expect(srcCatch === src).toBeTruthy();
   });
 
   it('should not update source file with same content', () => {
-    const src = getSourceFile(getFileKey(filePath), true);
+    const src = getSourceFile(normalizeFilePath(filePath), true);
     const srcCatch = createOrUpdateSourceFile(filePath, true);
     expect(srcCatch === src).toBeTruthy();
   });
 
   it('should update source file', () => {
-    const src = getSourceFile(getFileKey(filePath), true);
+    const src = getSourceFile(normalizeFilePath(filePath), true);
     const srcCatch = createOrUpdateSourceFile(filePath, true, true);
     expect(srcCatch === src).toBeFalsy();
   });
@@ -52,37 +50,34 @@ describe('sourceFile update', () => {
     './fixtures/manual-converter/type-schema/extended-type-schema.ts',
   );
 
-  const {
-    initializeSourceFiles,
-    getSourceFile,
-    createOrUpdateSourceFile,
-    updateSourceFileByPath,
-  } = new SourceFileCache();
+  const { initialize, getSourceFile, createOrUpdateSourceFile, updateSourceFileByPath } =
+    new SourceFileCache();
 
   // initial load
-  initializeSourceFiles({ expose: 'none', jsDoc: 'none', topRef: true }, refFile);
+  initialize(__dirname, {});
+
   createOrUpdateSourceFile(fileWithDependencies, true);
 
   // map ref to module
   setModuleDependencies(fileWithDependencies, [refFile]);
 
   it('should update referenced files if not in node_modules folder', () => {
-    const moduleSourceFile = getSourceFile(getFileKey(refFile), true);
-    const refSourceFile = getSourceFile(getFileKey(refFile), true);
+    const moduleSourceFile = getSourceFile(normalizeFilePath(refFile), true);
+    const refSourceFile = getSourceFile(normalizeFilePath(refFile), true);
 
     updateSourceFileByPath(fileWithDependencies, true);
 
-    const moduleSourceFileAfter = getSourceFile(getFileKey(refFile), true);
-    const refSourceFileAfter = getSourceFile(getFileKey(refFile), true);
+    const moduleSourceFileAfter = getSourceFile(normalizeFilePath(refFile), true);
+    const refSourceFileAfter = getSourceFile(normalizeFilePath(refFile), true);
 
     expect(refSourceFile === refSourceFileAfter).toBeFalsy();
     expect(moduleSourceFile === moduleSourceFileAfter).toBeFalsy();
   });
 
   it('should update file itself', () => {
-    const src = getSourceFile(getFileKey(refFile), true);
+    const src = getSourceFile(normalizeFilePath(refFile), true);
     updateSourceFileByPath(refFile, true);
-    const src2 = getSourceFile(getFileKey(refFile), true);
+    const src2 = getSourceFile(normalizeFilePath(refFile), true);
     expect(src === src2).toBeFalsy();
   });
 });

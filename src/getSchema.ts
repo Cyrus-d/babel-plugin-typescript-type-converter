@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable require-unicode-regexp */
 /* eslint-disable no-plusplus */
 /* eslint-disable no-magic-numbers */
@@ -12,17 +13,15 @@ import {
   mergeSchema,
   getTsTypeName,
   shouldTransform,
-  createProgram,
-  sourceFileCacheInstance,
 } from './utils';
-
 import { ConvertState, Path, PluginOptions } from './types';
 import { TransformerOptions } from './typings';
-import { transformerDependencyManager } from './TransformerDependencyManager';
-import { processFilePath } from './fileWatcher';
+import { getTransformerDependencyWatcher } from './TransformerDependencyWatcher';
 import { isCompilationComplete } from './utils/isCompilationComplete';
+import { sourceFileCache } from './SourceFileCache';
+import { createProgram } from './createProgram';
 
-const getMessage = (filePath: string) => `\nconverting type > ${path.basename(filePath)}`;
+const getMessage = (filePath: string) => `\nconvert type > ${path.basename(filePath)}`;
 
 export const getSchema = (
   projectRootPath: string,
@@ -39,9 +38,9 @@ export const getSchema = (
     jsDoc: 'none',
     path: filePath,
     shouldParseNode: (node: any) => {
-      // const path = node.getSourceFile().fileName;
-      // setModuleReferences
-      // transformerDependencyManager.addDependency(projectRootPath, filePath, path);
+      const path = node.getSourceFile().fileName;
+
+      getTransformerDependencyWatcher().addDependency(projectRootPath, filePath, path);
 
       if (shouldParseNode) shouldParseNode(node);
 
@@ -53,22 +52,14 @@ export const getSchema = (
     ...rest,
   };
 
-  sourceFileCacheInstance.updateSourceFileByPath(filePath);
+  sourceFileCache.updateSourceFileByPath(filePath);
 
-  processFilePath(projectRootPath, filePath);
-
-  if (isCompilationComplete()) {
+  if (isCompilationComplete() && options.showDebugMessages) {
     // const input = process.argv[2];
     // const endsWithNewLine = /\n$/.test(input);
-    const msg = getMessage(filePath);
-    console.time(msg);
+    process.stdout.write(getMessage(filePath));
+    console.time(' ');
   }
-
-  // if (sourceFileCacheInstance.initialized()) {
-  //   sourceFileCacheInstance.updateSourceFileByPath(filePath);
-  // } else {
-  //   sourceFileCacheInstance.initializeSourceFiles(config, filePath);
-  // }
 
   try {
     const program = createProgram(filePath);
@@ -82,8 +73,8 @@ export const getSchema = (
 
     const schema = generator.createSchema(config.type);
 
-    if (isCompilationComplete()) {
-      console.timeEnd(getMessage(filePath));
+    if (isCompilationComplete() && options.showDebugMessages) {
+      console.timeEnd(' ');
     }
 
     return schema;

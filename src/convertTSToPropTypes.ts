@@ -255,7 +255,7 @@ export function convertSymbolFromSource(
   let refNode: ts.Identifier | null = null;
 
   // Type references we're looking for are always from imports
-  source.statements.some(node => {
+  source.statements.some((node) => {
     if (ts.isImportDeclaration(node) && node.importClause) {
       const { name, namedBindings } = node.importClause;
 
@@ -266,7 +266,7 @@ export function convertSymbolFromSource(
       }
 
       if (!refNode && namedBindings && ts.isNamedImports(namedBindings)) {
-        return namedBindings.elements.some(element => {
+        return namedBindings.elements.some((element) => {
           if (element.name.text === symbolName) {
             refNode = element.name;
 
@@ -290,25 +290,6 @@ export function convertSymbolFromSource(
   if (!symbol) {
     return null;
   }
-
-  // const type = checker.getTypeOfSymbolAtLocation(symbol, symbol.valueDeclaration!);
-
-  // console.log(symbol, source.locals.get(symbolName));
-
-  // // This is a map of all symbols in the file.
-  // // @ts-ignore
-  // const symbol = source.locals.get(symbolName) as ts.Symbol;
-
-  // if (!symbol) {
-  //   return null;
-  // }
-
-  // console.log(symbol, symbol.declarations[0].);
-
-  // const type = checker.getTypeOfSymbolAtLocation(symbol, symbol.declarations[0].name);
-
-  // console.log(type);
-  // // console.log(type.getProperties());
 
   return null;
 }
