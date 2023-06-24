@@ -4,7 +4,6 @@ export * from './getSourceFileText';
 export * from './getTransformerOptions';
 export * from './getTypeNames';
 export * from './mergeSchema';
-export * from './moduleDependencies';
 export * from './shouldTransform';
 export * from './FileMap';
 export * from './cache-fs';

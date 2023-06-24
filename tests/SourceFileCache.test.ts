@@ -1,6 +1,5 @@
 import path from 'path';
-import { setModuleDependencies } from '../src/utils/moduleDependencies';
-import { normalizeFilePath } from '../src/utils/normalizeFilePath';
+import {} from '../src/utils';
 import { SourceFileCache } from '../src/SourceFileCache';
 
 jest.mock('chokidar', () => ({ watch: jest.fn(() => ({ on: jest.fn(() => {}) })) }));
@@ -14,7 +13,7 @@ describe('sourceFile', () => {
   const { initialize, getAllSourceFiles, getSourceFile, createOrUpdateSourceFile } =
     new SourceFileCache();
 
-  initialize(__dirname, {});
+  initialize({ root: __dirname });
 
   createOrUpdateSourceFile(filePath);
 
@@ -30,13 +29,13 @@ describe('sourceFile', () => {
   });
 
   it('should not update source file with same content', () => {
-    const src = getSourceFile(normalizeFilePath(filePath), true);
+    const src = getSourceFile(filePath, true);
     const srcCatch = createOrUpdateSourceFile(filePath, true);
     expect(srcCatch === src).toBeTruthy();
   });
 
   it('should update source file', () => {
-    const src = getSourceFile(normalizeFilePath(filePath), true);
+    const src = getSourceFile(filePath, true);
     const srcCatch = createOrUpdateSourceFile(filePath, true, true);
     expect(srcCatch === src).toBeFalsy();
   });
@@ -54,30 +53,27 @@ describe('sourceFile update', () => {
     new SourceFileCache();
 
   // initial load
-  initialize(__dirname, {});
+  initialize({ root: __dirname });
 
   createOrUpdateSourceFile(fileWithDependencies, true);
 
-  // map ref to module
-  setModuleDependencies(fileWithDependencies, [refFile]);
-
   it('should update referenced files if not in node_modules folder', () => {
-    const moduleSourceFile = getSourceFile(normalizeFilePath(refFile), true);
-    const refSourceFile = getSourceFile(normalizeFilePath(refFile), true);
+    const moduleSourceFile = getSourceFile(refFile, true);
+    const refSourceFile = getSourceFile(refFile, true);
 
     updateSourceFileByPath(fileWithDependencies, true);
 
-    const moduleSourceFileAfter = getSourceFile(normalizeFilePath(refFile), true);
-    const refSourceFileAfter = getSourceFile(normalizeFilePath(refFile), true);
+    const moduleSourceFileAfter = getSourceFile(refFile, true);
+    const refSourceFileAfter = getSourceFile(refFile, true);
 
     expect(refSourceFile === refSourceFileAfter).toBeFalsy();
     expect(moduleSourceFile === moduleSourceFileAfter).toBeFalsy();
   });
 
   it('should update file itself', () => {
-    const src = getSourceFile(normalizeFilePath(refFile), true);
+    const src = getSourceFile(refFile, true);
     updateSourceFileByPath(refFile, true);
-    const src2 = getSourceFile(normalizeFilePath(refFile), true);
+    const src2 = getSourceFile(refFile, true);
     expect(src === src2).toBeFalsy();
   });
 });

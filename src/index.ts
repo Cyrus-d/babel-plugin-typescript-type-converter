@@ -19,7 +19,6 @@ import { TransformerData } from './typings';
 import upsertImport from './upsertImport';
 import { Path, PluginOptions, ConvertState, PropTypeDeclaration } from './types';
 import {
-  cleanModuleDependenciesByPath,
   shouldTransform,
   getUpdateCacheFileContent,
   setUpdateCacheFileContent,
@@ -35,7 +34,10 @@ import {
 import { ConfigAPI } from './typings/babel';
 import { onCompileFile } from './utils/isCompilationComplete';
 import { sourceFileCache } from './SourceFileCache';
-import { instantiateTransformerDependencyWatcher } from './TransformerDependencyWatcher';
+import {
+  getTransformerDependencyWatcher,
+  instantiateTransformerDependencyWatcher,
+} from './TransformerDependencyWatcher';
 
 const BABEL_VERSION = 7;
 const MAX_DEPTH = 3;
@@ -68,7 +70,7 @@ let init = false;
 export default declare((api: ConfigAPI, options: PluginOptions, root: string): PluginObj => {
   api.assertVersion(BABEL_VERSION);
 
-  sourceFileCache.initialize(root, options);
+  sourceFileCache.initialize({ ...options, root });
 
   instantiateTransformerDependencyWatcher({ ...options, root });
 
@@ -506,9 +508,12 @@ export default declare((api: ConfigAPI, options: PluginOptions, root: string): P
             }
           });
 
-          if (!usingSchemaTransformer) {
-            cleanModuleDependenciesByPath(filename);
-          }
+          // /**
+          //  * it will be updated later with getSchema
+          //  */
+          // if (!usingSchemaTransformer) {
+          //   getTransformerDependencyWatcher().deleteTransformerFilePathFormDependencies(filename);
+          // }
         },
 
         exit(path: Path<t.Program>, programState: any) {

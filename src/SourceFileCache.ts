@@ -1,18 +1,18 @@
 import * as ts from 'typescript';
 import path from 'path';
 import glob from 'fast-glob';
-import { FileMap, getModuleDependencies, getSourceFileText, getTsCompilerOptions } from './utils';
-import { PluginOptions } from './types';
+import { FileMap, getSourceFileText, getTsCompilerOptions } from './utils';
+import { PluginOptionsInternal } from './types';
 
 const tsconfig: ts.CompilerOptions = getTsCompilerOptions();
 
 class SourceFileCache {
   sourceFilesCache!: FileMap<string, ts.SourceFile | null>;
 
-  initialize = (root: string, options: PluginOptions) => {
+  initialize = (options: PluginOptionsInternal) => {
     this.sourceFilesCache = new FileMap(options);
 
-    const { ignore = [] } = options;
+    const { ignore = [], root } = options;
 
     const files = glob.sync('**/*.{ts,tsx}', { cwd: root, ignore: ['node_modules/**', ...ignore] });
 
@@ -38,10 +38,9 @@ class SourceFileCache {
 
     const fromCache = sourceFilesCache.get(fileKey);
 
-    return fromCache;
-    // if (fromCache !== undefined || isAbsolutePath) {
-    //   return fromCache;
-    // }
+    if (fromCache !== undefined || isAbsolutePath) {
+      return fromCache;
+    }
 
     // // if no absolute path and only file name like lib.dom.iterable.d.ts
     // const searchResultFilePath = Object.keys(sourceFilesCache).find((x) => x.endsWith(fileKey));
@@ -55,7 +54,7 @@ class SourceFileCache {
 
     // sourceFilesCache.set(fileKey, null);
 
-    // return undefined;
+    return undefined;
   };
 
   createOrUpdateSourceFile = (
@@ -98,21 +97,6 @@ class SourceFileCache {
   };
 
   updateSourceFileByPath = (filePath: string, forceUpdate?: boolean) => {
-    /*
-      When an update triggered by updateReferences, the SourceFile of reference file not updating,
-      and it should updated in here.
-    */
-
-    const deps = getModuleDependencies(filePath);
-
-    if (deps) {
-      deps.forEach((d) => {
-        if (!d.includes('node_modules') && path.isAbsolute(d)) {
-          this.createOrUpdateSourceFile(d, true, forceUpdate);
-        }
-      });
-    }
-
     // now update SourceFile of file itself
     this.createOrUpdateSourceFile(filePath, true, forceUpdate);
   };

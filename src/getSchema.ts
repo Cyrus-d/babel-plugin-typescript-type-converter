@@ -31,6 +31,11 @@ export const getSchema = (
 ): tsJson.Definition | undefined => {
   const { shouldParseNode, ...rest } = options;
 
+  /**
+   * remove deps from transformer
+   */
+  getTransformerDependencyWatcher().deleteTransformerFilePathFormDependencies(filePath);
+
   const config: tsJson.Config = {
     allowArbitraryDataTypes: true,
     expose: 'none',
@@ -40,7 +45,7 @@ export const getSchema = (
     shouldParseNode: (node: any) => {
       const path = node.getSourceFile().fileName;
 
-      getTransformerDependencyWatcher().addDependency(projectRootPath, filePath, path);
+      getTransformerDependencyWatcher().addDependency(filePath, path);
 
       if (shouldParseNode) shouldParseNode(node);
 

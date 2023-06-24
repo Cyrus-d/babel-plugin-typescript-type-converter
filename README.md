@@ -5,6 +5,8 @@ A Babel plugin to generate React PropTypes from TypeScript interfaces or type al
 > Does not support converting external type references (as Babel has no type information) without
 > the `typeCheck` option being enabled.
 
+> Will add folder named `.cache` to the root of project
+
 ## Examples
 
 Supports class components that define generic props.

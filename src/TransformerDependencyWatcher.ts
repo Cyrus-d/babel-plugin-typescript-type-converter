@@ -5,7 +5,7 @@ import path from 'path';
 import chokidar from 'chokidar';
 import { FileMap, normalizeFilePath, setUpdateCacheFileContent, setUpdateComment } from './utils';
 import { sourceFileCache } from './SourceFileCache';
-import { PluginOptions, PluginOptionsInternal } from './types';
+import { PluginOptionsInternal } from './types';
 
 type TransformerModuleDependencies = FileMap<string, boolean>;
 type TransformerModuleRecords = FileMap<string, boolean>;
@@ -15,7 +15,7 @@ type TransformerFilePaths = FileMap<string, TransformerModuleDependencies>;
 class TransformerDependencyWatcher {
   watchingFiles: FileMap<string, boolean>;
 
-  pluginOptions: PluginOptions;
+  pluginOptions: PluginOptionsInternal;
 
   dependenciesFilePaths: DependenciesFilePaths;
 
@@ -26,8 +26,6 @@ class TransformerDependencyWatcher {
     this.dependenciesFilePaths = new FileMap(options);
     this.transformerFilePaths = new FileMap(options);
     this.watchingFiles = new FileMap<string, boolean>(options);
-
-    const { root } = options;
 
     const watcher = chokidar.watch(['**/*.ts', '**/*.tsx'], {
       awaitWriteFinish: {
@@ -44,73 +42,34 @@ class TransformerDependencyWatcher {
       persistent: true,
     });
 
-    const onFileChange = (
-      state: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir',
-      _path: string,
-    ) => {
-      const filePath = path.join(root, _path);
-      switch (state) {
-        case 'change':
-          {
-            const transformerFiles = this.dependenciesFilePaths.get(filePath);
-
-            if (transformerFiles) {
-              sourceFileCache.updateSourceFileByPath(filePath);
-              const transformerFilePaths = transformerFiles
-                .keys()
-                .filter((x) => normalizeFilePath(filePath) !== normalizeFilePath(x));
-              if (transformerFilePaths.length > 0) {
-                if (options.showDebugMessages) {
-                  console.log(`type change detected > ${path.basename(filePath)}`);
-                }
-                transformerFilePaths.forEach((transformerFilePath) => {
-                  if (fs.existsSync(transformerFilePath)) {
-                    if (options.cacheInvalidationStrategy === 'comment') {
-                      setUpdateComment(transformerFilePath, Date.now());
-                    } else {
-                      const content = fs.readFileSync(transformerFilePath, 'utf8');
-                      fs.writeFileSync(transformerFilePath, content, {
-                        encoding: 'utf8',
-                        flag: 'w',
-                      });
-                      setUpdateCacheFileContent(root, { timestamp: Date.now() });
-                    }
-                  }
-                });
-              }
-            }
-          }
-          break;
-        case 'unlink':
-        case 'unlinkDir':
-          {
-            const transformerDependencies = this.transformerFilePaths.get(filePath);
-
-            if (transformerDependencies) {
-              transformerDependencies.keys().forEach((dependencyFilePath) => {
-                const dependency = this.dependenciesFilePaths.get(dependencyFilePath);
-                if (dependency) {
-                  dependency.delete(filePath);
-                }
-              });
-            }
-            this.transformerFilePaths.delete(filePath);
-          }
-          break;
-        default:
-          break;
-      }
-    };
-
-    watcher.on('all', onFileChange);
+    watcher.on('all', this.onFileChange.bind(this));
   }
 
   get PluginOptions() {
     return this.pluginOptions;
   }
 
-  set PluginOptions(options: PluginOptions) {
+  set PluginOptions(options: PluginOptionsInternal) {
     this.pluginOptions = options;
+  }
+
+  onFileChange(state: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir', _path: string) {
+    const { root } = this.pluginOptions;
+
+    const filePath = path.join(root, _path);
+
+    switch (state) {
+      case 'change':
+        this.updateTransformerFilesByDependencyPath(filePath);
+        break;
+      case 'unlink':
+      case 'unlinkDir':
+        this.deleteTransformerFilePathFormDependencies(filePath);
+
+        break;
+      default:
+        break;
+    }
   }
 
   createMapIfNotExist = (fileMap: FileMap, key: string) => {
@@ -119,7 +78,7 @@ class TransformerDependencyWatcher {
     }
   };
 
-  addDependency(projectRootPath: string, transformerFilePath: string, dependencyFilePath: string) {
+  addDependency(transformerFilePath: string, dependencyFilePath: string) {
     this.createMapIfNotExist(this.dependenciesFilePaths, dependencyFilePath);
     this.createMapIfNotExist(this.transformerFilePaths, transformerFilePath);
 
@@ -130,23 +89,78 @@ class TransformerDependencyWatcher {
     transformer?.set(dependencyFilePath, true);
   }
 
-  addDependencies(
-    projectRootPath: string,
-    transformerFilePath: string,
-    dependencyFilePaths: string[],
-  ) {
-    dependencyFilePaths.forEach((dependency) => {
-      this.addDependency(projectRootPath, transformerFilePath, dependency);
-    });
+  updateTransformerFilesByDependencyPath(depPath: string) {
+    const transformerFiles = this.dependenciesFilePaths.get(depPath);
+    const { showDebugMessages, root, cacheInvalidationStrategy } = this.PluginOptions;
+
+    if (transformerFiles) {
+      sourceFileCache.updateSourceFileByPath(depPath);
+      const transformerFilePaths = transformerFiles
+        .keys()
+        .filter((x) => normalizeFilePath(depPath) !== normalizeFilePath(x));
+
+      if (transformerFilePaths.length > 0) {
+        if (showDebugMessages) {
+          console.log(`type change detected > ${path.basename(depPath)}`);
+        }
+
+        transformerFilePaths.forEach((transformerFilePath) => {
+          if (fs.existsSync(transformerFilePath)) {
+            if (cacheInvalidationStrategy === 'comment') {
+              setUpdateComment(transformerFilePath, Date.now());
+            } else {
+              const content = fs.readFileSync(transformerFilePath, 'utf8');
+              fs.writeFileSync(transformerFilePath, content, {
+                encoding: 'utf8',
+                flag: 'w',
+              });
+              if (cacheInvalidationStrategy === 'externalDependency') {
+                setUpdateCacheFileContent(root, { timestamp: Date.now() });
+              }
+            }
+          }
+        });
+      }
+    }
   }
 
-  getTransformerDependencies(transformerFilePath: string) {
-    return this.transformerFilePaths.get(transformerFilePath);
+  deleteTransformerFilePathFormDependencies(transformerFilePath: string) {
+    const transformerDependencies = this.transformerFilePaths.get(transformerFilePath);
+    if (transformerDependencies) {
+      transformerDependencies.keys().forEach((depFilePath) => {
+        const depsTransformerFilePaths = this.dependenciesFilePaths.get(depFilePath);
+        if (depsTransformerFilePaths) {
+          depsTransformerFilePaths.delete(transformerFilePath);
+        }
+      });
+    }
   }
 
-  getDependencyTransformers(dependencyFilePath: string) {
-    return this.dependenciesFilePaths.get(dependencyFilePath);
+  deleteTransformerAndDependencies(transformerFilePath: string) {
+    const transformerDependencies = this.transformerFilePaths.get(transformerFilePath);
+
+    if (transformerDependencies) {
+      transformerDependencies.keys().forEach((dependencyFilePath) => {
+        const dependency = this.dependenciesFilePaths.get(dependencyFilePath);
+        if (dependency) {
+          dependency.delete(transformerFilePath);
+        }
+      });
+    }
+    this.transformerFilePaths.delete(transformerFilePath);
   }
+
+  // deleteDependencyFilesPathFromTransformers(
+  //   dependencyFilePath: string,
+  //   transformersFilePaths: string[],
+  // ) {
+  //   const transformersPaths = this.dependenciesFilePaths.get(dependencyFilePath);
+  //   if (transformersPaths) {
+  //     transformersFilePaths.forEach((transformFilePath) => {
+  //       transformersPaths.delete(transformFilePath);
+  //     });
+  //   }
+  // }
 }
 
 let transformerDependencyWatcher: TransformerDependencyWatcher;
@@ -161,3 +175,5 @@ export const instantiateTransformerDependencyWatcher = (options: PluginOptionsIn
 export const getTransformerDependencyWatcher = () => {
   return transformerDependencyWatcher!;
 };
+
+export { TransformerDependencyWatcher };
