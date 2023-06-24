@@ -9,14 +9,17 @@ export function setUpdateComment(filePath: string, timestamp: number) {
   const fileContent = fs.readFileSync(filePath, 'utf8');
   let lines = fileContent.split('\n');
 
-  const stringsToMatch = Object.values(transformerFuncNames);
+  const transformerFucNames = Object.values(transformerFuncNames);
 
   lines = lines.filter((line) => !line.trim().startsWith('// typescript-type-transformer:update='));
 
   const result = [];
 
   for (const line of lines) {
-    const isTransformerFunc = stringsToMatch.findIndex((str: string) => line.includes(str)) !== -1;
+    const isTransformerFunc =
+      transformerFucNames.findIndex((transformerFucName: string) =>
+        line.includes(`${transformerFucName}<`),
+      ) !== -1;
 
     if (isTransformerFunc) {
       result.push(`// typescript-type-transformer:update=${timestamp}`);

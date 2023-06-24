@@ -15,7 +15,7 @@ describe('setUpdateComment', () => {
     const mockReadFileSync = jest
       .spyOn(fs, 'readFileSync')
       .mockReturnValue(
-        `transformTypeToKeys\nconsole.log("Hello, world!");\ntransformTypeToPropTypes`,
+        `transformTypeToKeys<Type>()\nconsole.log("Hello, world!");\ntransformTypeToPropTypes<Type>()`,
       );
 
     const mockWriteFileSync = jest.spyOn(fs, 'writeFileSync').mockImplementation();
@@ -29,10 +29,39 @@ describe('setUpdateComment', () => {
     const updatedLines = updatedContent.split('\n');
 
     expect(updatedLines[0]).toBe(`// typescript-type-transformer:update=${timestamp}`);
-    expect(updatedLines[1]).toBe('transformTypeToKeys');
+    expect(updatedLines[1]).toBe('transformTypeToKeys<Type>()');
     expect(updatedLines[2]).toBe('console.log("Hello, world!");');
     expect(updatedLines[3]).toBe(`// typescript-type-transformer:update=${timestamp}`);
-    expect(updatedLines[4]).toBe('transformTypeToPropTypes');
+    expect(updatedLines[4]).toBe('transformTypeToPropTypes<Type>()');
+
+    jest.unmock('fs');
+  });
+
+  it('should only add comment to function and not import', () => {
+    const filePath = 'testFile.js';
+    const timestamp = 1624351200000;
+
+    const mockReadFileSync = jest
+      .spyOn(fs, 'readFileSync')
+      .mockReturnValue(
+        `import { transformTypeToSchema } from 'typescript-type-transformer';\ntransformTypeToPropTypes<Type>()`,
+      );
+
+    const mockWriteFileSync = jest.spyOn(fs, 'writeFileSync').mockImplementation();
+
+    setUpdateComment(filePath, timestamp);
+
+    expect(mockReadFileSync).toHaveBeenCalledWith(filePath, 'utf8');
+    expect(mockWriteFileSync).toHaveBeenCalled();
+
+    const updatedContent = mockWriteFileSync.mock.calls[0][1] as string;
+    const updatedLines = updatedContent.split('\n');
+
+    expect(updatedLines[0]).toBe(
+      `import { transformTypeToSchema } from 'typescript-type-transformer';`,
+    );
+    expect(updatedLines[1]).toBe(`// typescript-type-transformer:update=${timestamp}`);
+    expect(updatedLines[2]).toBe('transformTypeToPropTypes<Type>()');
 
     jest.unmock('fs');
   });
@@ -44,7 +73,7 @@ describe('setUpdateComment', () => {
     const mockReadFileSync = jest
       .spyOn(fs, 'readFileSync')
       .mockReturnValue(
-        `// typescript-type-transformer:update=123456\ntransformTypeToKeys\nconsole.log("Hello, world!");\ntransformTypeToPropTypes`,
+        `// typescript-type-transformer:update=123456\ntransformTypeToKeys<Type>()\nconsole.log("Hello, world!");\ntransformTypeToPropTypes<Type>()`,
       );
 
     const mockWriteFileSync = jest.spyOn(fs, 'writeFileSync').mockImplementation();
@@ -57,10 +86,10 @@ describe('setUpdateComment', () => {
     const updatedLines = updatedContent.split('\n');
 
     expect(updatedLines[0]).toBe(`// typescript-type-transformer:update=${timestamp}`);
-    expect(updatedLines[1]).toBe('transformTypeToKeys');
+    expect(updatedLines[1]).toBe('transformTypeToKeys<Type>()');
     expect(updatedLines[2]).toBe('console.log("Hello, world!");');
     expect(updatedLines[3]).toBe(`// typescript-type-transformer:update=${timestamp}`);
-    expect(updatedLines[4]).toBe('transformTypeToPropTypes');
+    expect(updatedLines[4]).toBe('transformTypeToPropTypes<Type>()');
 
     jest.unmock('fs');
   });
@@ -72,7 +101,7 @@ describe('setUpdateComment', () => {
     const mockReadFileSync = jest
       .spyOn(fs, 'readFileSync')
       .mockReturnValue(
-        `transformTypeToKeys\n// typescript-type-transformer:update=123456\nconsole.log("Hello, world!");\ntransformTypeToPropTypes`,
+        `transformTypeToKeys<Type>()\n// typescript-type-transformer:update=123456\nconsole.log("Hello, world!");\ntransformTypeToPropTypes<Type>()`,
       );
 
     const mockWriteFileSync = jest.spyOn(fs, 'writeFileSync').mockImplementation();
@@ -85,10 +114,10 @@ describe('setUpdateComment', () => {
     const updatedLines = updatedContent.split('\n');
 
     expect(updatedLines[0]).toBe(`// typescript-type-transformer:update=${timestamp}`);
-    expect(updatedLines[1]).toBe('transformTypeToKeys');
+    expect(updatedLines[1]).toBe('transformTypeToKeys<Type>()');
     expect(updatedLines[2]).toBe('console.log("Hello, world!");');
     expect(updatedLines[3]).toBe(`// typescript-type-transformer:update=${timestamp}`);
-    expect(updatedLines[4]).toBe('transformTypeToPropTypes');
+    expect(updatedLines[4]).toBe('transformTypeToPropTypes<Type>()');
 
     jest.unmock('fs');
   });
