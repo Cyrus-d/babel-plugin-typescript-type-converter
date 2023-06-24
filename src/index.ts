@@ -70,7 +70,9 @@ let init = false;
 export default declare((api: ConfigAPI, options: PluginOptions, root: string): PluginObj => {
   api.assertVersion(BABEL_VERSION);
 
-  sourceFileCache.initialize({ ...options, root });
+  if (!init) {
+    sourceFileCache.initialize({ ...options, root });
+  }
 
   instantiateTransformerDependencyWatcher({ ...options, root });
 

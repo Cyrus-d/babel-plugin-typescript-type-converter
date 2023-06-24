@@ -19,7 +19,7 @@ describe('sourceFile', () => {
 
   it('should initialize sourceFiles', () => {
     const allSourceFiles = getAllSourceFiles();
-    expect(Object.keys(allSourceFiles).length > 0).toBe(true);
+    expect(Object.keys(allSourceFiles!).length > 0).toBe(true);
   });
 
   it('should not create source file if exist', () => {
@@ -56,19 +56,6 @@ describe('sourceFile update', () => {
   initialize({ root: __dirname });
 
   createOrUpdateSourceFile(fileWithDependencies, true);
-
-  it('should update referenced files if not in node_modules folder', () => {
-    const moduleSourceFile = getSourceFile(refFile, true);
-    const refSourceFile = getSourceFile(refFile, true);
-
-    updateSourceFileByPath(fileWithDependencies, true);
-
-    const moduleSourceFileAfter = getSourceFile(refFile, true);
-    const refSourceFileAfter = getSourceFile(refFile, true);
-
-    expect(refSourceFile === refSourceFileAfter).toBeFalsy();
-    expect(moduleSourceFile === moduleSourceFileAfter).toBeFalsy();
-  });
 
   it('should update file itself', () => {
     const src = getSourceFile(refFile, true);

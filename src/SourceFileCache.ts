@@ -1,25 +1,34 @@
 import * as ts from 'typescript';
+// import { createProgram, Config } from 'ts-to-json';
 import path from 'path';
 import glob from 'fast-glob';
-import { FileMap, getSourceFileText, getTsCompilerOptions } from './utils';
+
+// import { getModuleDependencies } from './moduleDependencies';
+// import { watchNodeModules } from './watchNodeModules';
+// import { getSourceFileText } from './getSourceFileText';
+import { getSourceFileText, getTsCompilerOptions, normalizeFilePath } from './utils';
 import { PluginOptionsInternal } from './types';
+
+interface SourceFileObject {
+  [key: string]: ts.SourceFile | null;
+}
 
 const tsconfig: ts.CompilerOptions = getTsCompilerOptions();
 
 class SourceFileCache {
-  sourceFilesCache!: FileMap<string, ts.SourceFile | null>;
+  sourceFilesCache: SourceFileObject | undefined;
 
   initialize = (options: PluginOptionsInternal) => {
-    this.sourceFilesCache = new FileMap(options);
+    this.sourceFilesCache = {};
 
     const { ignore = [], root } = options;
 
     const files = glob.sync('**/*.{ts,tsx}', { cwd: root, ignore: ['node_modules/**', ...ignore] });
 
-    const program = ts.createProgram(files, getTsCompilerOptions());
+    const program = ts.createProgram(files, tsconfig);
 
     const sourceFiles = program.getSourceFiles();
-
+    // console.log(files);
     // let cnt = 0;
     sourceFiles.forEach((sourceFile) => {
       const sourceFilePath = path.resolve(root, sourceFile.fileName);
@@ -27,32 +36,33 @@ class SourceFileCache {
     });
   };
 
-  addSourceFile(fileKey: string, sourceFile: ts.SourceFile) {
-    this.sourceFilesCache.set(fileKey, sourceFile);
+  addSourceFile(fileName: string, sourceFile: ts.SourceFile) {
+    const fileKey = normalizeFilePath(fileName);
+
+    this.sourceFilesCache = { ...this.sourceFilesCache, [fileKey]: sourceFile };
   }
 
-  initialized = () => this.sourceFilesCache !== undefined;
-
-  getSourceFile = (fileKey: string, isAbsolutePath?: boolean) => {
+  getSourceFile = (fileName: string, isAbsolutePath?: boolean) => {
+    const fileKey = normalizeFilePath(fileName);
+    if (!this.sourceFilesCache) return undefined;
     const { sourceFilesCache } = this;
 
-    const fromCache = sourceFilesCache.get(fileKey);
-
-    if (fromCache !== undefined || isAbsolutePath) {
-      return fromCache;
+    if (sourceFilesCache[fileKey] !== undefined || isAbsolutePath) {
+      return sourceFilesCache[fileKey];
     }
 
-    // // if no absolute path and only file name like lib.dom.iterable.d.ts
-    // const searchResultFilePath = Object.keys(sourceFilesCache).find((x) => x.endsWith(fileKey));
+    // if no absolute path and only file name like lib.dom.iterable.d.ts
+    const file = Object.keys(sourceFilesCache).find((x) => x.endsWith(fileKey));
 
-    // if (searchResultFilePath) {
-    //   // for performance changing key, so next time no need to search
-    //   sourceFilesCache.set(fileKey, sourceFilesCache.get(searchResultFilePath)!);
+    if (file) {
+      // for performance changing key, so next time no need to search
+      sourceFilesCache[fileKey] = sourceFilesCache[file];
 
-    //   return sourceFilesCache.get(searchResultFilePath);
-    // }
+      return sourceFilesCache[file];
+    }
 
-    // sourceFilesCache.set(fileKey, null);
+    // probably source file never going to be available, so set it to null to prevent search for it again
+    sourceFilesCache[fileKey] = null;
 
     return undefined;
   };
@@ -62,7 +72,10 @@ class SourceFileCache {
     forceUpdateIfDiff?: boolean,
     ignoreDiffCheck?: boolean,
   ) => {
-    const sourceFileCache = this.getSourceFile(fileName, path.isAbsolute(fileName));
+    if (!this.sourceFilesCache) return undefined;
+    const fileKey = normalizeFilePath(fileName);
+
+    const sourceFileCache = this.getSourceFile(fileKey, path.isAbsolute(fileName));
 
     if (!forceUpdateIfDiff) {
       if (sourceFileCache) {
@@ -71,7 +84,6 @@ class SourceFileCache {
     }
 
     const text = getSourceFileText(fileName);
-
     if (text === null) return undefined;
 
     // nothing to update
@@ -86,22 +98,38 @@ class SourceFileCache {
       true,
       ts.ScriptKind.TS,
     );
+    this.sourceFilesCache[fileKey] = sourceFile;
 
-    this.sourceFilesCache.set(fileName, sourceFile);
+    // watchNodeModules(fileName);
 
     return sourceFile;
   };
 
-  getAllSourceFiles = (): ts.SourceFile[] => {
-    return Object.values(this.sourceFilesCache).filter((x) => x !== null) as ts.SourceFile[];
+  getAllSourceFiles = () => {
+    return this.sourceFilesCache;
   };
 
   updateSourceFileByPath = (filePath: string, forceUpdate?: boolean) => {
+    /*
+      When an update triggered by updateReferences, the SourceFile of reference file not updating,
+      and it should updated in here.
+    */
+
+    // const deps = getModuleDependencies(filePath);
+
+    // if (deps) {
+    //   deps.forEach((d) => {
+    //     if (!d.includes('node_modules') && path.isAbsolute(d)) {
+    //       this.createOrUpdateSourceFile(d, true, forceUpdate);
+    //     }
+    //   });
+    // }
+
     // now update SourceFile of file itself
     this.createOrUpdateSourceFile(filePath, true, forceUpdate);
   };
 }
 
-const sourceFileCache = new SourceFileCache();
+export const sourceFileCache = new SourceFileCache();
 
-export { sourceFileCache, SourceFileCache };
+export { SourceFileCache };
