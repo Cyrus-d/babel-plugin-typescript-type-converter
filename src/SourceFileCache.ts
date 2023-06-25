@@ -1,13 +1,9 @@
+/* eslint-disable no-magic-numbers */
 import * as ts from 'typescript';
 // import { createProgram, Config } from 'ts-to-json';
 import path from 'path';
-import glob from 'fast-glob';
 
-// import { getModuleDependencies } from './moduleDependencies';
-// import { watchNodeModules } from './watchNodeModules';
-// import { getSourceFileText } from './getSourceFileText';
 import { getSourceFileText, getTsCompilerOptions, normalizeFilePath } from './utils';
-import { PluginOptionsInternal } from './types';
 
 interface SourceFileObject {
   [key: string]: ts.SourceFile | null;
@@ -16,25 +12,7 @@ interface SourceFileObject {
 const tsconfig: ts.CompilerOptions = getTsCompilerOptions();
 
 class SourceFileCache {
-  sourceFilesCache: SourceFileObject | undefined;
-
-  initialize = (options: PluginOptionsInternal) => {
-    this.sourceFilesCache = {};
-
-    const { ignore = [], root } = options;
-
-    const files = glob.sync('**/*.{ts,tsx}', { cwd: root, ignore: ['node_modules/**', ...ignore] });
-
-    const program = ts.createProgram(files, tsconfig);
-
-    const sourceFiles = program.getSourceFiles();
-    // console.log(files);
-    // let cnt = 0;
-    sourceFiles.forEach((sourceFile) => {
-      const sourceFilePath = path.resolve(root, sourceFile.fileName);
-      this.addSourceFile(sourceFilePath, sourceFile);
-    });
-  };
+  sourceFilesCache: SourceFileObject = {};
 
   addSourceFile(fileName: string, sourceFile: ts.SourceFile) {
     const fileKey = normalizeFilePath(fileName);
@@ -72,7 +50,6 @@ class SourceFileCache {
     forceUpdateIfDiff?: boolean,
     ignoreDiffCheck?: boolean,
   ) => {
-    if (!this.sourceFilesCache) return undefined;
     const fileKey = normalizeFilePath(fileName);
 
     const sourceFileCache = this.getSourceFile(fileKey, path.isAbsolute(fileName));
@@ -106,7 +83,7 @@ class SourceFileCache {
   };
 
   getAllSourceFiles = () => {
-    return this.sourceFilesCache;
+    return Object.values(this.sourceFilesCache);
   };
 
   updateSourceFileByPath = (filePath: string, forceUpdate?: boolean) => {

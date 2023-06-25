@@ -109,7 +109,7 @@ describe('TransformerDependencyWatcher', () => {
 
     const spyOnWriteFileSync = jest.spyOn(fs, 'writeFileSync');
 
-    jest.spyOn(fs, 'readFileSync').mockReturnValueOnce(TRANSFORM_TYPE_TO_SCHEMA);
+    jest.spyOn(fs, 'readFileSync').mockReturnValueOnce(`${TRANSFORM_TYPE_TO_SCHEMA}<`);
 
     watcherInstance.addDependency(transformerFilePath, dependencyFilePath);
 
@@ -196,98 +196,5 @@ describe('TransformerDependencyWatcher', () => {
 
       expect(spyOnDeleteTransformerFilePathFormDependencies).toHaveBeenCalled();
     });
-    // test('should handle "change" state correctly', () => {
-    //   const mockFilePath = 'testFilePath';
-    //   const mockTransformerFiles = new FileMap();
-    //   const mockTransformerFilePaths = new FileMap();
-    //   // Mock the required methods and properties
-    //   watcherInstance.dependenciesFilePaths.get = jest.fn(() => mockTransformerFiles);
-    //   sourceFileCache.updateSourceFileByPath = jest.fn();
-    //   mockTransformerFiles.keys = jest.fn(() => ['transformerFilePath1', 'transformerFilePath2']);
-    //   normalizeFilePath.mockReturnValueOnce('normalizedFilePath');
-    //   fs.existsSync.mockReturnValueOnce(true);
-    //   watcherInstance.pluginOptions.showDebugMessages = true;
-    //   fs.readFileSync.mockReturnValueOnce('content');
-    //   // Call the method with the "change" state
-    //   watcherInstance.onFileChange('change', mockFilePath);
-    //   // Assertions
-    //   expect(sourceFileCache.updateSourceFileByPath).toHaveBeenCalledWith(mockFilePath);
-    //   expect(chokidar.watch).toHaveBeenCalledWith(
-    //     ['**/*.ts', '**/*.tsx'],
-    //     expect.objectContaining({
-    //       awaitWriteFinish: expect.objectContaining({
-    //         pollInterval: 100,
-    //         stabilityThreshold: 1000,
-    //       }),
-    //       ignored: expect.any(Array),
-    //       ignoreInitial: true,
-    //       persistent: true,
-    //     })
-    //   );
-    //   expect(watcherInstance.pluginOptions.showDebugMessages).toBe(true);
-    //   expect(console.log).toHaveBeenCalledWith(`type change detected > ${path.basename(mockFilePath)}`);
-    //   expect(fs.writeFileSync).toHaveBeenCalledTimes(2);
-    //   expect(setUpdateComment).toHaveBeenCalledWith('transformerFilePath1', expect.any(Number));
-    //   expect(setUpdateComment).toHaveBeenCalledWith('transformerFilePath2', expect.any(Number));
-    //   expect(setUpdateCacheFileContent).toHaveBeenCalledWith(mockOptions.root, { timestamp: expect.any(Number) });
-    // });
-    //   test('should handle "unlink" and "unlinkDir" states correctly', () => {
-    //     const mockFilePath = 'testFilePath';
-    //     const mockTransformerDependencies = new FileMap();
-    //     // Mock the required methods and properties
-    //     watcherInstance.transformerFilePaths.get = jest.fn(() => mockTransformerDependencies);
-    //     mockTransformerDependencies.keys = jest.fn(() => ['dependencyFilePath1', 'dependencyFilePath2']);
-    //     // Call the method with the "unlink" state
-    //     watcherInstance.onFileChange('unlink', mockFilePath);
-    //     // Assertions
-    //     expect(mockTransformerDependencies.keys).toHaveBeenCalled();
-    //     expect(mockTransformerDependencies.delete).toHaveBeenCalledWith('dependencyFilePath1');
-    //     expect(mockTransformerDependencies.delete).toHaveBeenCalledWith('dependencyFilePath2');
-    //     // Call the method with the "unlinkDir" state
-    //     watcherInstance.onFileChange('unlinkDir', mockFilePath);
-    //     // Assertions
-    //     expect(mockTransformerDependencies.delete).toHaveBeenCalledWith(mockFilePath);
-    //   });
-    //   // Add more test cases for other states as needed
-    // });
-    // describe('deleteTransformerFilePathFormDependencies', () => {
-    //   test('should delete transformer file path from dependencies', () => {
-    //     const mockTransformerFilePath = 'testTransformerFilePath';
-    //     const mockTransformerDependencies = new FileMap();
-    //     const mockDependencyPaths = new FileMap();
-    //     // Mock the required methods and properties
-    //     watcherInstance.transformerFilePaths.get = jest.fn(() => mockTransformerDependencies);
-    //     mockTransformerDependencies.keys = jest.fn(() => ['depFilePath1', 'depFilePath2']);
-    //     watcherInstance.dependenciesFilePaths.get = jest.fn(() => mockDependencyPaths);
-    //     // Call the method
-    //     watcherInstance.deleteTransformerFilePathFormDependencies(mockTransformerFilePath);
-    //     // Assertions
-    //     expect(mockTransformerDependencies.keys).toHaveBeenCalled();
-    //     expect(mockDependencyPaths.delete).toHaveBeenCalledWith('testTransformerFilePath');
-    //     expect(mockDependencyPaths.delete).toHaveBeenCalledWith('depFilePath1');
-    //     expect(mockDependencyPaths.delete).toHaveBeenCalledWith('depFilePath2');
-    //   });
-    // });
-    // Add more test cases for other methods as needed
   });
-
-  // describe('instantiateTransformerDependencyWatcher', () => {
-  //   test('should instantiate the TransformerDependencyWatcher', () => {
-  //     const mockOptions: PluginOptionsInternal = {
-  //       // Mock your options here
-  //     };
-
-  //     instantiateTransformerDependencyWatcher(mockOptions);
-
-  //     expect(getTransformerDependencyWatcher()).toBeInstanceOf(TransformerDependencyWatcher);
-  //   });
-  // });
-
-  // describe('getTransformerDependencyWatcher', () => {
-  //   test('should return the TransformerDependencyWatcher instance', () => {
-  //     const watcherInstance = new TransformerDependencyWatcher({} as PluginOptionsInternal);
-  //     watcherInstance.watchingFiles = new FileMap();
-
-  //     expect(getTransformerDependencyWatcher()).toBe(watcherInstance);
-  //   });
 });

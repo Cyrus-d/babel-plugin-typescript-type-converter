@@ -1,7 +1,5 @@
 /* eslint-disable no-console */
-/* eslint-disable require-unicode-regexp */
-/* eslint-disable no-plusplus */
-/* eslint-disable no-magic-numbers */
+
 import * as tsJson from 'ts-to-json';
 import { types as t } from '@babel/core';
 import astConverter from 'babel-object-to-ast';
@@ -13,6 +11,7 @@ import {
   mergeSchema,
   getTsTypeName,
   shouldTransform,
+  getTsToJsonConfig,
 } from './utils';
 import { ConvertState, Path, PluginOptions } from './types';
 import { TransformerOptions } from './typings';
@@ -24,38 +23,23 @@ import { createProgram } from './createProgram';
 const getMessage = (filePath: string) => `\nconvert type > ${path.basename(filePath)}`;
 
 export const getSchema = (
-  projectRootPath: string,
   filePath: string,
   propName: string,
   options: PluginOptions,
 ): tsJson.Definition | undefined => {
   const { shouldParseNode, ...rest } = options;
 
-  /**
-   * remove deps from transformer
-   */
-  getTransformerDependencyWatcher().deleteTransformerFilePathFormDependencies(filePath);
-
-  const config: tsJson.Config = {
-    allowArbitraryDataTypes: true,
-    expose: 'none',
-    handleUnknownTypes: true,
-    jsDoc: 'none',
-    path: filePath,
-    shouldParseNode: (node: any) => {
-      const path = node.getSourceFile().fileName;
-
-      getTransformerDependencyWatcher().addDependency(filePath, path);
-
-      if (shouldParseNode) shouldParseNode(node);
-
-      return true;
+  const config: tsJson.Config = getTsToJsonConfig(
+    {
+      path: filePath,
+      type: propName,
+      ...rest,
     },
-    skipTypeCheck: true,
-    topRef: true,
-    type: propName,
-    ...rest,
-  };
+    (node) => {
+      const path = node.getSourceFile().fileName;
+      getTransformerDependencyWatcher().addDependency(filePath, path);
+    },
+  );
 
   sourceFileCache.updateSourceFileByPath(filePath);
 
@@ -91,7 +75,6 @@ export const getSchema = (
 };
 
 export function getSchemaObject<T>(
-  projectRootPath: string,
   node: t.CallExpression,
   state: ConvertState,
   typeNames: string[],
@@ -99,7 +82,7 @@ export function getSchemaObject<T>(
 ) {
   const newOptions = deepmerge(state.options, options as any);
 
-  const schemaArr = typeNames.map((p) => getSchema(projectRootPath, state.filePath, p, newOptions));
+  const schemaArr = typeNames.map((p) => getSchema(state.filePath, p, newOptions));
 
   if (!schemaArr) return null;
 
@@ -117,7 +100,6 @@ const setNullValue = (path: Path<any>, id: t.Identifier) => {
 };
 
 export const generateTypeKeys = (
-  projectRootPath: string,
   id: t.Identifier,
   path: Path<any>,
   node: t.CallExpression,
@@ -136,7 +118,7 @@ export const generateTypeKeys = (
     return;
   }
 
-  const schema = getSchemaObject(projectRootPath, node, state, typeNames, options);
+  const schema = getSchemaObject(node, state, typeNames, options);
 
   if (!schema || !schema.properties) {
     setNullValue(path, id);
@@ -150,7 +132,6 @@ export const generateTypeKeys = (
 };
 
 export const generateTypeSchema = (
-  projectRootPath: string,
   id: t.Identifier,
   path: Path<any>,
   node: t.CallExpression,
@@ -169,7 +150,7 @@ export const generateTypeSchema = (
     return;
   }
 
-  const schema = getSchemaObject(projectRootPath, node, state, typeNames, options);
+  const schema = getSchemaObject(node, state, typeNames, options);
   const schemaObject = astConverter(schema);
   path.replaceWith(t.variableDeclaration(path.node.kind, [t.variableDeclarator(id, schemaObject)]));
 };
@@ -179,7 +160,6 @@ export function generateComponentPropSchema<
   S extends ConvertState,
   P extends t.TSIntersectionType | t.TSTypeReference | t.TSUnionType | undefined,
 >(
-  projectRootPath: string,
   componentName: string,
   rootPath: T,
   state: S,
@@ -195,7 +175,7 @@ export function generateComponentPropSchema<
     shouldTransform(options.disableTransformInEnv)
   ) {
     const typeNames = getTsTypeName(propTypes as t.TSIntersectionType);
-    const schema = getSchemaObject(projectRootPath, generatorNode, state, typeNames, options);
+    const schema = getSchemaObject(generatorNode, state, typeNames, options);
 
     if (!schema) return;
 

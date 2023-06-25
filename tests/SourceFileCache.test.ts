@@ -10,10 +10,7 @@ describe('sourceFile', () => {
     './fixtures/manual-converter/type-schema/interface-schema.ts',
   );
 
-  const { initialize, getAllSourceFiles, getSourceFile, createOrUpdateSourceFile } =
-    new SourceFileCache();
-
-  initialize({ root: __dirname });
+  const { getAllSourceFiles, getSourceFile, createOrUpdateSourceFile } = new SourceFileCache();
 
   createOrUpdateSourceFile(filePath);
 
@@ -49,11 +46,7 @@ describe('sourceFile update', () => {
     './fixtures/manual-converter/type-schema/extended-type-schema.ts',
   );
 
-  const { initialize, getSourceFile, createOrUpdateSourceFile, updateSourceFileByPath } =
-    new SourceFileCache();
-
-  // initial load
-  initialize({ root: __dirname });
+  const { getSourceFile, createOrUpdateSourceFile, updateSourceFileByPath } = new SourceFileCache();
 
   createOrUpdateSourceFile(fileWithDependencies, true);
 

@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers */
 /* eslint-disable no-console */
 /* eslint-disable require-unicode-regexp */
 import fs from 'fs';
@@ -94,8 +95,17 @@ class TransformerDependencyWatcher {
     const { showDebugMessages, root, cacheInvalidationStrategy } = this.PluginOptions;
 
     if (transformerFiles) {
-      sourceFileCache.updateSourceFileByPath(depPath);
-      const transformerFilePaths = transformerFiles
+      let transformerFilePaths = transformerFiles.keys();
+
+      transformerFilePaths.forEach((transformerFilePath) => {
+        const transformerDeps = this.transformerFilePaths.get(transformerFilePath)?.keys() || [];
+
+        transformerDeps.forEach((transDepPath) => {
+          sourceFileCache.updateSourceFileByPath(transDepPath);
+        });
+      });
+
+      transformerFilePaths = transformerFiles
         .keys()
         .filter((x) => normalizeFilePath(depPath) !== normalizeFilePath(x));
 
@@ -105,6 +115,12 @@ class TransformerDependencyWatcher {
         }
 
         transformerFilePaths.forEach((transformerFilePath) => {
+          const transformerDeps = this.transformerFilePaths.get(transformerFilePath)?.keys() || [];
+
+          transformerDeps.forEach((transDepPath) => {
+            sourceFileCache.updateSourceFileByPath(transDepPath);
+          });
+
           if (fs.existsSync(transformerFilePath)) {
             if (cacheInvalidationStrategy === 'comment') {
               setUpdateComment(transformerFilePath, Date.now());

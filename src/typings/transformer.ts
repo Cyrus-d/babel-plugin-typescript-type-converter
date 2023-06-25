@@ -7,3 +7,7 @@ export interface TransformerData {
   propsType?: PropTypeDeclaration;
   state: ConvertState;
 }
+
+export interface TransformerFunctionToDependenciesMap {
+  [transform: string]: string[];
+}

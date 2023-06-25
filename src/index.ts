@@ -1,10 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-plusplus */
-/**
- * @copyright   2018-2019, Miles Johnson, mo doaie
- * @license     https://opensource.org/licenses/MIT
- */
-
 /* eslint-disable prefer-destructuring */
 import { declare } from '@babel/helper-plugin-utils';
 import { addDefault, addNamed } from '@babel/helper-module-imports';
@@ -33,11 +26,7 @@ import {
 } from './constants';
 import { ConfigAPI } from './typings/babel';
 import { onCompileFile } from './utils/isCompilationComplete';
-import { sourceFileCache } from './SourceFileCache';
-import {
-  getTransformerDependencyWatcher,
-  instantiateTransformerDependencyWatcher,
-} from './TransformerDependencyWatcher';
+import { initializeTypeTransformer } from './initializeTypeTransformer';
 
 const BABEL_VERSION = 7;
 const MAX_DEPTH = 3;
@@ -70,13 +59,11 @@ let init = false;
 export default declare((api: ConfigAPI, options: PluginOptions, root: string): PluginObj => {
   api.assertVersion(BABEL_VERSION);
 
-  if (!init) {
-    sourceFileCache.initialize({ ...options, root });
-  }
+  const { cacheInvalidationStrategy } = options;
 
-  instantiateTransformerDependencyWatcher({ ...options, root });
+  initializeTypeTransformer({ ...options, root });
 
-  if (process.env.NODE_ENV !== 'test') {
+  if (process.env.NODE_ENV !== 'test' && cacheInvalidationStrategy === 'externalDependency') {
     const cacheFileName = init
       ? getCacheFilePath(root, UPDATE_CACHE_FILE_NAME)
       : setUpdateCacheFileContent(root, { timestamp: Date.now() });
@@ -141,7 +128,7 @@ export default declare((api: ConfigAPI, options: PluginOptions, root: string): P
           const { filename } = programState;
 
           const state = (this as any).state as ConvertState;
-          let usingSchemaTransformer = false;
+
           state.filePath = filename;
           if (isNotTS(filename)) {
             return;
@@ -227,14 +214,12 @@ export default declare((api: ConfigAPI, options: PluginOptions, root: string): P
 
                 if (node.callee.name === TRANSFORM_COMPONENT_PROPS_TO_SCHEMA) {
                   if (node.arguments.length > 0 && t.isIdentifier(node.arguments[0])) {
-                    usingSchemaTransformer = true;
                     componentsToGeneratePropSchema.push({ name: node.arguments[0].name, node });
                     path.remove();
                   }
                 }
 
                 if (node.callee.name === TRANSFORM_TYPE_TO_PROP_TYPES) {
-                  usingSchemaTransformer = true;
                   if (node.arguments.length > 0 && t.isIdentifier(node.arguments[0])) {
                     componentsToPropTypes.push(node.arguments[0].name);
                     path.remove();
@@ -463,12 +448,10 @@ export default declare((api: ConfigAPI, options: PluginOptions, root: string): P
                 }
 
                 if (t.isIdentifier(init.callee) && init.callee.name === TRANSFORM_TYPE_TO_SCHEMA) {
-                  usingSchemaTransformer = true;
-                  generateTypeSchema(root, id, path, init, state, options);
+                  generateTypeSchema(id, path, init, state, options);
                 }
                 if (t.isIdentifier(init.callee) && init.callee.name === TRANSFORM_TYPE_TO_KEYS) {
-                  usingSchemaTransformer = true;
-                  generateTypeKeys(root, id, path, init, state, options);
+                  generateTypeKeys(id, path, init, state, options);
                 }
               }
 
@@ -499,7 +482,6 @@ export default declare((api: ConfigAPI, options: PluginOptions, root: string): P
             const generatorInfo = componentsToGeneratePropSchema.find((x) => x.name === name);
             if (generatorInfo) {
               generateComponentPropSchema(
-                root,
                 name,
                 path,
                 state,
