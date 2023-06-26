@@ -6,8 +6,6 @@ export const createProgram = (filePath: string) => {
   const tsconfig = getTsCompilerOptions();
   const program = ts.createProgram([filePath], tsconfig, {
     fileExists(fileName): boolean {
-      if (!fileName.endsWith('.ts') && !fileName.endsWith('.tsx')) return false;
-
       const file = sourceFileCache.createOrUpdateSourceFile(fileName);
       if (!file) {
         return false;
